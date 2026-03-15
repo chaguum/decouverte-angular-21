@@ -1,0 +1,72 @@
+<section class="space-y-6">
+  <p-card>
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,1fr)] lg:items-start">
+      <div class="space-y-5">
+        <div class="flex flex-wrap items-center gap-3">
+          <p-tag value="Projet atelier" severity="contrast" />
+          <p-tag value="PrimeNG + Tailwind" severity="secondary" />
+        </div>
+
+        <div class="space-y-3">
+          <h2 class="text-4xl font-semibold leading-tight text-surface-950">
+            Base du workshop Angular 21 prete pour etre remplie pas a pas
+          </h2>
+          <p class="max-w-3xl text-base leading-7 text-surface-600">
+            Chaque sujet dispose deja de sa route, de son parent component et de son README
+            markdown reserve dans le dossier public.
+          </p>
+        </div>
+      </div>
+
+      <div class="rounded-[2rem] border border-surface-200 bg-surface-50 p-5">
+        <p class="text-sm font-semibold uppercase tracking-[0.22em] text-surface-500">
+          Ordre defini
+        </p>
+        <ol class="mt-4 space-y-3 text-sm text-surface-700">
+          @for (topic of topics; track topic.id) {
+            <li class="flex items-start gap-3">
+              <span
+                class="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-surface-950 text-xs font-semibold text-white"
+              >
+                {{ topic.order }}
+              </span>
+              <span>Exercice {{ topic.order }} : {{ topic.label }}</span>
+            </li>
+          }
+        </ol>
+      </div>
+    </div>
+  </p-card>
+
+  <div class="grid gap-4 xl:grid-cols-2">
+    @for (topic of topics; track topic.id) {
+      <p-card>
+        <div class="flex h-full flex-col gap-5">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+                Exercice {{ topic.order }}
+              </p>
+              <h3 class="mt-2 text-2xl font-semibold text-surface-950">
+                Exercice {{ topic.order }} : {{ topic.label }}
+              </h3>
+            </div>
+
+            <p-tag value="Scaffold" severity="success" />
+          </div>
+
+          <p class="flex-1 text-sm leading-6 text-surface-600">
+            {{ topic.summary }}
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <a pButton [routerLink]="topic.path" label="Ouvrir la page" severity="contrast"></a>
+            <code class="rounded-full bg-surface-100 px-3 py-2 text-xs text-surface-700">
+              {{ topic.readmePath }}
+            </code>
+          </div>
+        </div>
+      </p-card>
+    }
+  </div>
+</section>

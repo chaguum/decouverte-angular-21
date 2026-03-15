@@ -1,0 +1,18 @@
+<p-card>
+  <div class="space-y-4">
+    <div class="space-y-1">
+      <h3 class="text-lg font-semibold text-surface-950">{{ title }}</h3>
+      <p class="text-sm text-surface-600">
+        Chaque badge est rendu par un composant standalone avec ses imports explicites.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <p-tag
+        *ngFor="let item of items"
+        [value]="item"
+        severity="secondary"
+      />
+    </div>
+  </div>
+</p-card>
