@@ -5,8 +5,7 @@ export type WorkshopTopicId =
   | 'signals-input-output'
   | 'rxjs-signals-interop'
   | 'ngrx-signal-store'
-  | 'signal-forms'
-  | 'signal-queries';
+  | 'signal-forms';
 
 export interface WorkshopTopic {
   readonly order: number;
@@ -73,14 +72,6 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
     path: '/exercise-6',
     summary: 'Construire un formulaire pilote par signals avec un modele de formulaire, du binding et de la validation.',
     readmePath: '/themes/exercise-6/README_signal-forms.md'
-  },
-  {
-    order: 7,
-    id: 'signal-queries',
-    label: 'Signal queries',
-    path: '/exercise-7',
-    summary: 'Moderniser ViewChild et ContentChild avec des queries signal, puis les combiner avec computed et effect.',
-    readmePath: '/themes/exercise-7/README_signal-queries.md'
   }
 ] as const;
 

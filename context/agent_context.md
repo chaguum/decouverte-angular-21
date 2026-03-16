@@ -175,7 +175,6 @@ Ordre courant:
 5. Interop RxJS / Signals
 6. NgRx Signal Store
 7. Signal Forms
-8. Signal queries
 
 Correspondance des routes:
 
@@ -186,7 +185,6 @@ Correspondance des routes:
 - `exercise-4` = Interop RxJS / Signals
 - `exercise-5` = NgRx Signal Store
 - `exercise-6` = Signal Forms
-- `exercise-7` = Signal queries
 
 ## Principe general
 

@@ -48,12 +48,6 @@ export const routes: Routes = [
     title: 'Exercice 6 : Signal Forms | ATOS Angular 21 Workshop'
   },
   {
-    path: 'exercise-7',
-    loadComponent: () =>
-      import('./pages/exercise-7/exercise-7').then((module) => module.Exercise7),
-    title: 'Exercice 7 : Signal queries | ATOS Angular 21 Workshop'
-  },
-  {
     path: '**',
     redirectTo: ''
   }
