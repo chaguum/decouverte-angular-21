@@ -7,13 +7,13 @@ import {
   withMethods,
   withState
 } from '@ngrx/signals';
+import { removeAllEntities, setAllEntities, withEntities } from '@ngrx/signals/entities';
 
 import { fetchExercise5Products } from './exercise-5.fake-api';
 import { CatalogProduct, ProductFilter } from './exercise-5.models';
 import { withStatus } from './exercise-5-status.feature';
 
 type Exercise5State = {
-  products: readonly CatalogProduct[];
   favoriteIds: readonly number[];
   filter: ProductFilter;
   requestCount: number;
@@ -21,7 +21,6 @@ type Exercise5State = {
 };
 
 const initialState: Exercise5State = {
-  products: [],
   favoriteIds: [],
   filter: 'all',
   requestCount: 0,
@@ -31,31 +30,33 @@ const initialState: Exercise5State = {
 export const Exercise5ProductsStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
+  withEntities<CatalogProduct>(),
   withStatus(),
-  withComputed(({ favoriteIds, filter, products }) => ({
+  withComputed(({ entities, favoriteIds, filter }) => ({
     favoriteProducts: computed(() =>
-      products().filter((product) => favoriteIds().includes(product.id))
+      entities().filter((product) => favoriteIds().includes(product.id))
     ),
     visibleProducts: computed(() => {
       switch (filter()) {
         case 'favorites':
-          return products().filter((product) => favoriteIds().includes(product.id));
+          return entities().filter((product) => favoriteIds().includes(product.id));
         case 'available':
-          return products().filter((product) => product.available);
+          return entities().filter((product) => product.available);
         default:
-          return products();
+          return entities();
       }
     }),
+    totalProducts: computed(() => entities().length),
     favoriteCount: computed(() => favoriteIds().length),
     availableFavoritesCount: computed(() =>
-      products().filter(
+      entities().filter(
         (product) => favoriteIds().includes(product.id) && product.available
       ).length
     )
   })),
   withMethods((store) => {
     const performLoad = async (force = false, shouldFail = false) => {
-      if (!force && store.products().length > 0) {
+      if (!force && store.entities().length > 0) {
         patchState(store, {
           status: 'fulfilled',
           errorMessage: null
@@ -74,12 +75,15 @@ export const Exercise5ProductsStore = signalStore(
       try {
         const products = await fetchExercise5Products({ shouldFail });
 
-        patchState(store, {
-          products,
-          lastLoadedAt: new Date().toLocaleTimeString('fr-FR'),
-          status: 'fulfilled',
-          errorMessage: null
-        });
+        patchState(
+          store,
+          setAllEntities([...products]),
+          {
+            lastLoadedAt: new Date().toLocaleTimeString('fr-FR'),
+            status: 'fulfilled',
+            errorMessage: null
+          }
+        );
       } catch (error) {
         patchState(store, {
           status: 'error',
@@ -112,7 +116,7 @@ export const Exercise5ProductsStore = signalStore(
         patchState(store, { filter });
       },
       clearStore() {
-        patchState(store, {
+        patchState(store, removeAllEntities(), {
           ...initialState,
           status: 'idle',
           errorMessage: null

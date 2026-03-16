@@ -12,9 +12,9 @@
     <aside class="workbench-brief">
       <h3>Ce que montre la correction</h3>
       <p>
-        `withState` porte l etat brut, `withComputed` les derivees, `withMethods` les
-        actions, `withHooks` le chargement initial et `withStatus()` le cycle
-        `idle / pending / fulfilled / error`.
+        `withEntities()` porte la collection de produits, `withState` le reste de l etat
+        brut, `withComputed` les derivees, `withMethods` les actions, `withHooks` le
+        chargement initial et `withStatus()` le cycle `idle / pending / fulfilled / error`.
       </p>
       <ol>
         <li>Allez sur un autre exercice puis revenez ici.</li>
@@ -53,6 +53,7 @@
     </section>
 
     <section class="summary">
+      <p><strong>Produits en memoire :</strong> {{ store.totalProducts() }}</p>
       <p><strong>Statut :</strong> {{ store.statusText() }}</p>
       <p><strong>Requetes lancees :</strong> {{ store.requestCount() }}</p>
       <p><strong>Dernier chargement :</strong> {{ store.lastLoadedAt() ?? 'Aucun' }}</p>

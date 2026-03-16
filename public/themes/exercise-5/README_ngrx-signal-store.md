@@ -19,6 +19,9 @@ Si chaque composant recharge ses donnees dans son coin, on duplique vite:
 L objectif de cet exercice est donc simple:
 **centraliser un etat partage dans un NgRx Signal Store**.
 
+Dans cette version de l atelier, on ajoute aussi `withEntities()` pour modeliser la
+collection de produits avec les utilitaires NgRx dedies.
+
 ## Ce que l exercice veut vous faire comprendre
 
 Le gain principal n est pas seulement syntaxique.
@@ -78,13 +81,47 @@ Ce code peut marcher, mais il finit vite par regrouper dans le meme endroit:
 
 Avec NgRx Signal Store, on se force a separer les responsabilites.
 
-### 1. `withState`
+### 1. `withEntities`
+
+Quand votre store porte une vraie collection metier, `withEntities()` est souvent plus
+interessant qu un simple tableau dans `withState`.
+
+```ts
+withEntities<Product>()
+```
+
+Cette feature ajoute notamment:
+
+- `entityMap`
+- `ids`
+- `entities`
+
+et vous permet ensuite d utiliser des updaters comme `setAllEntities()`.
+
+Exemple de chargement:
+
+```ts
+patchState(
+  store,
+  setAllEntities(products),
+  {
+    status: 'fulfilled',
+    errorMessage: null
+  }
+);
+```
+
+Dans cet exercice, cela permet de bien montrer la difference entre:
+
+- la collection metier de produits
+- le reste du state applicatif comme le filtre, les favoris ou le statut
+
+### 2. `withState`
 
 `withState` decrit ce que le store possede.
 
 ```ts
 withState({
-  products: [] as Product[],
   favoriteIds: [] as number[],
   filter: 'all' as ProductFilter,
   requestCount: 0,
@@ -95,7 +132,7 @@ withState({
 Ici, on parle uniquement de l etat brut.
 Pas de derivees. Pas d action. Pas de logique de chargement.
 
-### 2. `withComputed`
+### 3. `withComputed`
 
 `withComputed` decrit ce que le store deduit de son etat.
 
@@ -104,12 +141,12 @@ withComputed((store) => ({
   favoriteCount: computed(() => store.favoriteIds().length),
   visibleProducts: computed(() => {
     if (store.filter() === 'favorites') {
-      return store.products().filter((product) =>
+      return store.entities().filter((product) =>
         store.favoriteIds().includes(product.id)
       );
     }
 
-    return store.products();
+    return store.entities();
   })
 }))
 ```
@@ -117,7 +154,7 @@ withComputed((store) => ({
 Ici, on ne modifie rien.
 On derive simplement de nouvelles valeurs a partir du state.
 
-### 3. `withMethods`
+### 4. `withMethods`
 
 `withMethods` porte les intentions metier.
 
@@ -142,7 +179,7 @@ On lit tres bien ce que le store sait faire:
 - changer le filtre
 - ajouter ou retirer un favori
 
-### 4. `withHooks`
+### 5. `withHooks`
 
 `withHooks` permet de decrire le cycle de vie du store.
 
@@ -156,7 +193,7 @@ withHooks({
 
 Dans cet exercice, le premier chargement part automatiquement quand le store est initialise.
 
-### 5. `withStatus`
+### 6. `withStatus`
 
 Dans cet atelier, on ajoute une petite feature locale `withStatus()`.
 Le but est de modeliser explicitement:
@@ -192,7 +229,7 @@ La methode de chargement du resultat attendu contient une garde tres importante:
 
 ```ts
 async loadProducts() {
-  if (store.products().length > 0) {
+  if (store.entities().length > 0) {
     patchState(store, {
       status: 'fulfilled',
       errorMessage: null
@@ -227,15 +264,17 @@ Dans le resultat attendu, le store vit au niveau applicatif.
 ## Mission
 
 1. Identifier l etat initial a mettre dans `withState`.
-2. Deplacer les derivees dans `withComputed`.
-3. Deplacer les actions metier dans `withMethods`.
-4. Utiliser `withHooks` pour lancer le chargement initial.
-5. Garder un statut explicite avec `withStatus()`.
-6. Eviter un rechargement si les produits existent deja dans le store.
+2. Utiliser `withEntities()` pour porter la collection de produits.
+3. Deplacer les derivees dans `withComputed`.
+4. Deplacer les actions metier dans `withMethods`.
+5. Utiliser `withHooks` pour lancer le chargement initial.
+6. Garder un statut explicite avec `withStatus()`.
+7. Eviter un rechargement si les produits existent deja dans le store.
 
 ## Ce qu il faut retenir
 
-- `withState` = ce que le store possede
+- `withEntities` = une collection metier geree proprement
+- `withState` = le reste de l etat brut
 - `withComputed` = ce que le store deduit
 - `withMethods` = ce que le store fait
 - `withHooks` = quand il agit dans son cycle de vie
@@ -246,7 +285,7 @@ Le vrai benefice, c est aussi la **reutilisation d un etat deja charge a l echel
 
 ## Criteres de validation
 
-- le store utilise `withState`, `withComputed`, `withMethods` et `withHooks`
+- le store utilise `withEntities`, `withState`, `withComputed`, `withMethods` et `withHooks`
 - un statut explicite `idle / pending / fulfilled / error` est visible
 - le composant consomme le store au lieu de porter toute la logique
 - la navigation dans l application ne force pas un nouveau chargement si les donnees existent deja
@@ -256,6 +295,7 @@ Le vrai benefice, c est aussi la **reutilisation d un etat deja charge a l echel
 - Guide Signal Store: [https://ngrx.io/guide/signals/signal-store](https://ngrx.io/guide/signals/signal-store)
 - API `signalStore`: [https://ngrx.io/api/signals/signalStore](https://ngrx.io/api/signals/signalStore)
 - API `withState`: [https://ngrx.io/api/signals/withState](https://ngrx.io/api/signals/withState)
+- API `withEntities`: [https://ngrx.io/api/signals/entities/withEntities](https://ngrx.io/api/signals/entities/withEntities)
 - API `withComputed`: [https://ngrx.io/api/signals/withComputed](https://ngrx.io/api/signals/withComputed)
 - API `withMethods`: [https://ngrx.io/api/signals/withMethods](https://ngrx.io/api/signals/withMethods)
 - API `withHooks`: [https://ngrx.io/api/signals/withHooks](https://ngrx.io/api/signals/withHooks)
