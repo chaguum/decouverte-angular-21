@@ -4,8 +4,8 @@ export type WorkshopTopicId =
   | 'signals'
   | 'signals-input-output'
   | 'rxjs-signals-interop'
-  | 'linked-signal-state'
   | 'ngrx-signal-store'
+  | 'signal-forms'
   | 'defer';
 
 export interface WorkshopTopic {
@@ -60,19 +60,19 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
   },
   {
     order: 5,
-    id: 'linked-signal-state',
-    label: 'linkedSignal et state derive',
+    id: 'ngrx-signal-store',
+    label: 'NgRx Signal Store',
     path: '/exercise-5',
-    summary: 'Modeliser un state derive modifiable et comprendre les dependances reactives.',
-    readmePath: '/themes/exercise-5/README_linked-signal.md'
+    summary: 'Structurer un state partage avec withState, withComputed, withMethods, withHooks et withStatus.',
+    readmePath: '/themes/exercise-5/README_ngrx-signal-store.md'
   },
   {
     order: 6,
-    id: 'ngrx-signal-store',
-    label: 'NgRx Signal Store',
+    id: 'signal-forms',
+    label: 'Signal Forms',
     path: '/exercise-6',
-    summary: 'Structurer un state partage avec withState, withComputed, withMethods, withHooks et withStatus.',
-    readmePath: '/themes/exercise-6/README_ngrx-signal-store.md'
+    summary: 'Construire un formulaire pilote par signals avec un modele de formulaire, du binding et de la validation.',
+    readmePath: '/themes/exercise-6/README_signal-forms.md'
   },
   {
     order: 7,

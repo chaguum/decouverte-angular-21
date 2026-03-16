@@ -164,8 +164,8 @@ Ordre courant:
 2. Controle de flux + `@let`
 3. Signals
 4. Interop RxJS / Signals
-5. `linkedSignal`
-6. NgRx Signal Store
+5. NgRx Signal Store
+6. Signal Forms
 7. `@defer`
 
 ## Principe general

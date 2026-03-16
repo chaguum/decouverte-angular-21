@@ -10,5 +10,5 @@ import { getWorkshopTopic } from '../../workshop-topics';
   styleUrl: './exercise-5.css'
 })
 export class Exercise5 {
-  protected readonly topic = getWorkshopTopic('linked-signal-state');
+  protected readonly topic = getWorkshopTopic('ngrx-signal-store');
 }

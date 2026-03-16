@@ -39,13 +39,13 @@ export const routes: Routes = [
     path: 'exercise-5',
     loadComponent: () =>
       import('./pages/exercise-5/exercise-5').then((module) => module.Exercise5),
-    title: 'Exercice 5 : linkedSignal et state derive | ATOS Angular 21 Workshop'
+    title: 'Exercice 5 : NgRx Signal Store | ATOS Angular 21 Workshop'
   },
   {
     path: 'exercise-6',
     loadComponent: () =>
       import('./pages/exercise-6/exercise-6').then((module) => module.Exercise6),
-    title: 'Exercice 6 : NgRx Signal Store | ATOS Angular 21 Workshop'
+    title: 'Exercice 6 : Signal Forms | ATOS Angular 21 Workshop'
   },
   {
     path: 'exercise-7',

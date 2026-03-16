@@ -1,0 +1,90 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Resultat attendu</p>
+    <h2>Version Signal Forms</h2>
+    <p>
+      Le formulaire est maintenant pilote par un modele signal et un `FieldTree` cree avec
+      `form()`.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>API utilisee</h3>
+      <p>
+        `signal()` porte le modele, `form()` cree la structure des champs, et `[formField]`
+        synchronise automatiquement UI, validation et donnees.
+      </p>
+    </div>
+
+    <div class="experimental-note">
+      Signal Forms est experimental dans la documentation Angular. Cette correction sert a
+      comprendre la direction prise par Angular, pas a imposer une adoption immediate partout.
+    </div>
+
+    <div class="actions">
+      <button type="button" (click)="fillDemoProfile()">Charger un profil demo</button>
+    </div>
+
+    <div class="workbench-content">
+      <form class="form-column" (submit)="onSubmit($event)">
+        <h3>Formulaire Signal Forms</h3>
+
+        <label for="result-name">Nom</label>
+        <input id="result-name" type="text" [formField]="profileForm.name" />
+        @if (profileForm.name().touched() && profileForm.name().invalid()) {
+          @for (error of profileForm.name().errors(); track error) {
+            <p class="field-error">{{ error.message }}</p>
+          }
+        }
+
+        <label for="result-email">Email</label>
+        <input id="result-email" type="email" [formField]="profileForm.email" />
+        @if (profileForm.email().touched() && profileForm.email().invalid()) {
+          @for (error of profileForm.email().errors(); track error) {
+            <p class="field-error">{{ error.message }}</p>
+          }
+        }
+
+        <label for="result-role">Role</label>
+        <select id="result-role" [formField]="profileForm.role">
+          @for (option of roleOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        @if (profileForm.role().touched() && profileForm.role().invalid()) {
+          @for (error of profileForm.role().errors(); track error) {
+            <p class="field-error">{{ error.message }}</p>
+          }
+        }
+
+        <label class="checkbox-line">
+          <input type="checkbox" [formField]="profileForm.wantsNewsletter" />
+          <span>Recevoir la newsletter interne</span>
+        </label>
+
+        <button type="submit">Envoyer</button>
+      </form>
+
+      <section class="preview-column">
+        <h3>Apercu courant</h3>
+        <p><strong>Nom :</strong> {{ profileModel().name || 'A renseigner' }}</p>
+        <p><strong>Email :</strong> {{ profileModel().email || 'A renseigner' }}</p>
+        <p><strong>Role :</strong> {{ profileModel().role || 'A renseigner' }}</p>
+        <p>
+          <strong>Newsletter :</strong>
+          {{ profileModel().wantsNewsletter ? 'Oui' : 'Non' }}
+        </p>
+
+        @if (submittedProfile()) {
+          <div class="submit-box">
+            <h4>Derniere soumission</h4>
+            <p><strong>Nom :</strong> {{ submittedProfile()!.name }}</p>
+            <p><strong>Email :</strong> {{ submittedProfile()!.email }}</p>
+            <p><strong>Role :</strong> {{ submittedProfile()!.role }}</p>
+          </div>
+        }
+      </section>
+    </div>
+  </div>
+</section>

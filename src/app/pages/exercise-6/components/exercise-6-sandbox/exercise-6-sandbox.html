@@ -1,0 +1,89 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Sandbox</p>
+    <h2>Point de depart: Reactive Forms classique</h2>
+    <p>
+      Le formulaire fonctionne deja, mais il repose sur `FormGroup`, `FormControl` et une gestion
+      plus historique des champs.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>Consigne</h3>
+      <p>
+        L objectif est de conserver exactement la meme experience utilisateur, mais en faisant
+        passer le formulaire vers Signal Forms.
+      </p>
+      <ol>
+        @for (step of steps; track step) {
+          <li>{{ step }}</li>
+        }
+      </ol>
+    </div>
+
+    <div class="experimental-note">
+      Signal Forms reste une API experimentale dans la documentation Angular. L objectif ici est de
+      la comprendre, pas de la presenter comme un standard deja fige.
+    </div>
+
+    <div class="actions">
+      <button type="button" (click)="fillDemoProfile()">Charger un profil demo</button>
+    </div>
+
+    <div class="workbench-content">
+      <form class="form-column" [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <h3>Formulaire classique</h3>
+
+        <label for="sandbox-name">Nom</label>
+        <input id="sandbox-name" type="text" formControlName="name" />
+        @if (fieldError('name'); as error) {
+          <p class="field-error">{{ error }}</p>
+        }
+
+        <label for="sandbox-email">Email</label>
+        <input id="sandbox-email" type="email" formControlName="email" />
+        @if (fieldError('email'); as error) {
+          <p class="field-error">{{ error }}</p>
+        }
+
+        <label for="sandbox-role">Role</label>
+        <select id="sandbox-role" formControlName="role">
+          @for (option of roleOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        @if (fieldError('role'); as error) {
+          <p class="field-error">{{ error }}</p>
+        }
+
+        <label class="checkbox-line">
+          <input type="checkbox" formControlName="wantsNewsletter" />
+          <span>Recevoir la newsletter interne</span>
+        </label>
+
+        <button type="submit">Envoyer</button>
+      </form>
+
+      <section class="preview-column">
+        <h3>Apercu courant</h3>
+        <p><strong>Nom :</strong> {{ currentValue().name || 'A renseigner' }}</p>
+        <p><strong>Email :</strong> {{ currentValue().email || 'A renseigner' }}</p>
+        <p><strong>Role :</strong> {{ currentValue().role || 'A renseigner' }}</p>
+        <p>
+          <strong>Newsletter :</strong>
+          {{ currentValue().wantsNewsletter ? 'Oui' : 'Non' }}
+        </p>
+
+        @if (submittedProfile) {
+          <div class="submit-box">
+            <h4>Derniere soumission</h4>
+            <p><strong>Nom :</strong> {{ submittedProfile.name }}</p>
+            <p><strong>Email :</strong> {{ submittedProfile.email }}</p>
+            <p><strong>Role :</strong> {{ submittedProfile.role }}</p>
+          </div>
+        }
+      </section>
+    </div>
+  </div>
+</section>
