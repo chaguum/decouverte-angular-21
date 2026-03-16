@@ -14,6 +14,7 @@ export interface WorkshopTopic {
   readonly path: string;
   readonly summary: string;
   readonly readmePath: string;
+  readonly readmeGithubUrl: string;
 }
 
 export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
@@ -23,7 +24,9 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
     label: 'Standalone',
     path: '/exercise-1',
     summary: 'Base de modernisation Angular: architecture sans NgModule et providers applicatifs.',
-    readmePath: '/themes/exercise-1/README_standalone.md'
+    readmePath: '/themes/exercise-1/README_standalone.md',
+    readmeGithubUrl:
+      'https://github.com/chaguum/decouverte-angular-21/blob/main/public/themes/exercise-1/README_standalone.md'
   },
   {
     order: 2,
@@ -31,7 +34,9 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
     label: 'Controle de flux et @let',
     path: '/exercise-2',
     summary: 'Nouvelle syntaxe template pour structurer les vues et rendre les templates plus lisibles.',
-    readmePath: '/themes/exercise-2/README_control-flow-and-let.md'
+    readmePath: '/themes/exercise-2/README_control-flow-and-let.md',
+    readmeGithubUrl:
+      'https://github.com/chaguum/decouverte-angular-21/blob/main/public/themes/exercise-2/README_control-flow-and-let.md'
   },
   {
     order: 3,
@@ -39,7 +44,9 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
     label: 'Signals',
     path: '/exercise-3',
     summary: 'Signals, computed, effect, input, output et model pour le state moderne Angular.',
-    readmePath: '/themes/exercise-3/README_signals.md'
+    readmePath: '/themes/exercise-3/README_signals.md',
+    readmeGithubUrl:
+      'https://github.com/chaguum/decouverte-angular-21/blob/main/public/themes/exercise-3/README_signals.md'
   },
   {
     order: 3.5,
@@ -47,7 +54,9 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
     label: 'Signals et input/output',
     path: '/exercise-3-5',
     summary: 'Faire circuler un state Signals entre parent et enfant, puis moderniser la communication avec input() et output().',
-    readmePath: '/themes/exercise-3-5/README_signals-input-output.md'
+    readmePath: '/themes/exercise-3-5/README_signals-input-output.md',
+    readmeGithubUrl:
+      'https://github.com/chaguum/decouverte-angular-21/blob/main/public/themes/exercise-3-5/README_signals-input-output.md'
   },
   {
     order: 4,
@@ -55,7 +64,9 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
     label: 'Interop RxJS et Signals',
     path: '/exercise-4',
     summary: 'Passer d un codebase RxJS existant vers une approche hybride sans perdre en clarte.',
-    readmePath: '/themes/exercise-4/README_rxjs-signals-interop.md'
+    readmePath: '/themes/exercise-4/README_rxjs-signals-interop.md',
+    readmeGithubUrl:
+      'https://github.com/chaguum/decouverte-angular-21/blob/main/public/themes/exercise-4/README_rxjs-signals-interop.md'
   },
   {
     order: 5,
@@ -63,7 +74,9 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
     label: 'NgRx Signal Store',
     path: '/exercise-5',
     summary: 'Structurer un state partage avec withState, withComputed, withMethods, withHooks et withStatus.',
-    readmePath: '/themes/exercise-5/README_ngrx-signal-store.md'
+    readmePath: '/themes/exercise-5/README_ngrx-signal-store.md',
+    readmeGithubUrl:
+      'https://github.com/chaguum/decouverte-angular-21/blob/main/public/themes/exercise-5/README_ngrx-signal-store.md'
   },
   {
     order: 6,
@@ -71,7 +84,9 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
     label: 'Signal Forms',
     path: '/exercise-6',
     summary: 'Construire un formulaire pilote par signals avec un modele de formulaire, du binding et de la validation.',
-    readmePath: '/themes/exercise-6/README_signal-forms.md'
+    readmePath: '/themes/exercise-6/README_signal-forms.md',
+    readmeGithubUrl:
+      'https://github.com/chaguum/decouverte-angular-21/blob/main/public/themes/exercise-6/README_signal-forms.md'
   }
 ] as const;
 

@@ -169,27 +169,30 @@ Cette petite condition explique tres bien l interet du state partage:
 ## Architecture de l exercice
 
 - `Exercise5Sandbox` est encore branche sur un service local
-- `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.service.ts`
+- `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-sandbox-products.service.ts`
   montre le point de depart
-- `src/app/exercice/exercise-5/exercise-5-products.store.ts`
+- `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.store.ts`
   est le fichier starter a completer
 - `Exercise5Result`
   montre la correction finale
 - `src/app/exercice/exercise-5/components/exercise-5-result/store.ts`
   contient la version complete du store
+- `src/app/exercice/exercise-5/exercise-5-products.service.ts`
+  joue ici le role de service de chargement injecte par le store
 
 ## Mission
 
-1. Observer le service de depart dans `components/exercise-5-sandbox/exercise-5-products.service.ts`.
-2. Ouvrir `src/app/exercice/exercise-5/exercise-5-products.store.ts`.
+1. Observer le service de depart dans `components/exercise-5-sandbox/exercise-5-sandbox-products.service.ts`.
+2. Ouvrir `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.store.ts`.
 3. Ajouter `withEntities()` pour porter la collection de produits.
 4. Completer les derivees dans `withComputed`.
-5. Completer `loadProducts()`, `reloadProducts()` et `simulateErrorReload()`.
+5. Completer `loadProducts()` dans `withMethods` avec l injection du service de chargement.
 6. Garder `toggleFavorite()` et `setFilter()` dans `withMethods`.
-7. Utiliser `withHooks` pour lancer le chargement initial.
-8. Garder un statut explicite avec `withStatus()`.
-9. Rebrancher ensuite le composant sandbox sur le store au lieu du service.
-10. Eviter un rechargement si les produits existent deja dans le store.
+7. Completer `clearStore()` pour remettre aussi la collection a zero.
+8. Utiliser `withHooks` pour lancer le chargement initial.
+9. Garder un statut explicite avec `withStatus()`.
+10. Rebrancher ensuite le composant sandbox sur le store au lieu du service.
+11. Verifier qu un deuxieme appel a `loadProducts()` ne relance pas de chargement si les donnees sont deja presentes.
 
 ## Ce que l equipe doit comprendre a la fin
 

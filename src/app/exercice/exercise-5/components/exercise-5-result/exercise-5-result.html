@@ -20,8 +20,8 @@
         <li>Allez sur un autre exercice puis revenez ici.</li>
         <li>Observez que les donnees sont toujours presentes.</li>
         <li>
-          Regardez le compteur: aucun nouvel appel n est lance si le store possede deja les
-          produits.
+          Cliquez sur `Relancer loadProducts()`: aucun nouvel appel n est lance si le store
+          possede deja les produits.
         </li>
       </ol>
     </aside>
@@ -32,12 +32,7 @@
 
     <section class="toolbar">
       <div class="toolbar-actions">
-        <button type="button" (click)="store.reloadProducts()">
-          Recharger volontairement
-        </button>
-        <button type="button" (click)="store.simulateErrorReload()">
-          Simuler une erreur
-        </button>
+        <button type="button" (click)="store.loadProducts()">Relancer loadProducts()</button>
         <button type="button" class="danger-button" (click)="store.clearStore()">
           Vider le store
         </button>

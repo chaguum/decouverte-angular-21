@@ -28,6 +28,10 @@ export class App {
     const path = this.currentUrl().split('?')[0] ?? '';
     return /^\/exercise-\d+(?:-\d+)?$/.test(path) ? path : null;
   });
+  protected readonly currentExerciseTopic = computed(() => {
+    const path = this.currentExercisePath();
+    return path ? this.topics.find((topic) => topic.path === path) ?? null : null;
+  });
   protected readonly isExerciseRoute = computed(() => this.currentExercisePath() !== null);
   protected readonly exerciseViewMode = computed<'sandbox' | 'result'>(() => {
     const view = this.router.parseUrl(this.currentUrl()).queryParams['view'];

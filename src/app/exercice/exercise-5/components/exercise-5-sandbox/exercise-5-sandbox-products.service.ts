@@ -1,10 +1,12 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 
-import { fetchExercise5Products } from '../../exercise-5.fake-api';
+import { Exercise5ProductsService } from '../../exercise-5-products.service';
 import { CatalogProduct, LoadStatus, ProductFilter } from '../../exercise-5.models';
 
 @Injectable()
-export class Exercise5ProductsService {
+export class Exercise5SandboxProductsService {
+  private readonly productsService = inject(Exercise5ProductsService);
+
   readonly products = signal<readonly CatalogProduct[]>([]);
   readonly favoriteIds = signal<readonly number[]>([]);
   readonly filter = signal<ProductFilter>('all');
@@ -32,13 +34,13 @@ export class Exercise5ProductsService {
     ).length
   );
 
-  async loadProducts(shouldFail = false): Promise<void> {
+  async loadProducts(): Promise<void> {
     this.status.set('pending');
     this.errorMessage.set(null);
     this.requestCount.update((count) => count + 1);
 
     try {
-      const products = await fetchExercise5Products({ shouldFail });
+      const products = await this.productsService.loadProducts();
 
       this.products.set(products);
       this.status.set('fulfilled');
@@ -49,14 +51,6 @@ export class Exercise5ProductsService {
         error instanceof Error ? error.message : 'Une erreur inconnue est survenue.'
       );
     }
-  }
-
-  async reloadProducts(): Promise<void> {
-    await this.loadProducts(false);
-  }
-
-  async simulateErrorReload(): Promise<void> {
-    await this.loadProducts(true);
   }
 
   setFilter(filter: ProductFilter): void {

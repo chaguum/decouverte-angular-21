@@ -1,4 +1,4 @@
-import { computed } from '@angular/core';
+import { computed, inject } from '@angular/core';
 import {
   patchState,
   signalStore,
@@ -9,7 +9,7 @@ import {
 } from '@ngrx/signals';
 import { removeAllEntities, setAllEntities, withEntities } from '@ngrx/signals/entities';
 
-import { fetchExercise5Products } from '../../exercise-5.fake-api';
+import { Exercise5ProductsService } from '../../exercise-5-products.service';
 import { CatalogProduct, ProductFilter } from '../../exercise-5.models';
 import { withStatus } from '../../exercise-5-status.feature';
 
@@ -54,9 +54,9 @@ export const Exercise5ResultStore = signalStore(
       ).length
     )
   })),
-  withMethods((store) => {
-    const performLoad = async (force = false, shouldFail = false) => {
-      if (!force && store.entities().length > 0) {
+  withMethods((store, productsService = inject(Exercise5ProductsService)) => ({
+    async loadProducts() {
+      if (store.entities().length > 0) {
         patchState(store, {
           status: 'fulfilled',
           errorMessage: null
@@ -73,7 +73,7 @@ export const Exercise5ResultStore = signalStore(
       });
 
       try {
-        const products = await fetchExercise5Products({ shouldFail });
+        const products = await productsService.loadProducts();
 
         patchState(store, setAllEntities([...products]), {
           lastLoadedAt: new Date().toLocaleTimeString('fr-FR'),
@@ -87,39 +87,27 @@ export const Exercise5ResultStore = signalStore(
             error instanceof Error ? error.message : 'Une erreur inconnue est survenue.'
         });
       }
-    };
+    },
+    toggleFavorite(productId: number) {
+      const isFavorite = store.favoriteIds().includes(productId);
 
-    return {
-      async loadProducts() {
-        await performLoad(false);
-      },
-      async reloadProducts() {
-        await performLoad(true);
-      },
-      async simulateErrorReload() {
-        await performLoad(true, true);
-      },
-      toggleFavorite(productId: number) {
-        const isFavorite = store.favoriteIds().includes(productId);
-
-        patchState(store, {
-          favoriteIds: isFavorite
-            ? store.favoriteIds().filter((id) => id !== productId)
-            : [...store.favoriteIds(), productId]
-        });
-      },
-      setFilter(filter: ProductFilter) {
-        patchState(store, { filter });
-      },
-      clearStore() {
-        patchState(store, removeAllEntities(), {
-          ...initialState,
-          status: 'idle',
-          errorMessage: null
-        });
-      }
-    };
-  }),
+      patchState(store, {
+        favoriteIds: isFavorite
+          ? store.favoriteIds().filter((id) => id !== productId)
+          : [...store.favoriteIds(), productId]
+      });
+    },
+    setFilter(filter: ProductFilter) {
+      patchState(store, { filter });
+    },
+    clearStore() {
+      patchState(store, removeAllEntities(), {
+        ...initialState,
+        status: 'idle',
+        errorMessage: null
+      });
+    }
+  })),
   withHooks({
     onInit(store) {
       void store.loadProducts();

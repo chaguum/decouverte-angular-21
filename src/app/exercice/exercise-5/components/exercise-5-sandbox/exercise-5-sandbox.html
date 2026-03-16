@@ -13,9 +13,9 @@
       <h3>Consigne</h3>
       <p>
         Point de depart :
-        <strong>`src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.service.ts`</strong>.
+        <strong>`src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-sandbox-products.service.ts`</strong>.
         Objectif :
-        <strong>`src/app/exercice/exercise-5/exercise-5-products.store.ts`</strong>.
+        <strong>`src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.store.ts`</strong>.
       </p>
       <ol>
         <li>Reperez l etat, les derivees et les methodes dans le service.</li>
@@ -27,16 +27,15 @@
     </aside>
 
     <p class="starter-path">
-      Point de depart : `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.service.ts`
+      Point de depart : `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-sandbox-products.service.ts`
     </p>
     <p class="starter-path">
-      Fichier a coder : `src/app/exercice/exercise-5/exercise-5-products.store.ts`
+      Fichier a coder : `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.store.ts`
     </p>
 
     <section class="toolbar">
       <div class="toolbar-actions">
-        <button type="button" (click)="service.reloadProducts()">Recharger</button>
-        <button type="button" (click)="service.simulateErrorReload()">Simuler une erreur</button>
+        <button type="button" (click)="service.loadProducts()">Relancer loadProducts()</button>
         <button type="button" (click)="service.clearStore()">Vider</button>
       </div>
 
