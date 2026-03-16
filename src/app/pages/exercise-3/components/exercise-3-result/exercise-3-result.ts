@@ -55,11 +55,19 @@ export class Exercise3Result {
   });
 
   protected readonly resultsCount = computed(() => this.filteredProducts().length);
+  protected readonly availableProductsCount = computed(
+    () => this.filteredProducts().filter((product) => product.available).length
+  );
   protected readonly pageTitle = computed(() => `Catalogue produits (${this.resultsCount()})`);
 
   constructor() {
     effect(() => {
       this.title.setTitle(this.pageTitle());
     });
+  }
+
+  protected resetFilters(): void {
+    this.searchTerm.set('');
+    this.selectedCategory.set('all');
   }
 }

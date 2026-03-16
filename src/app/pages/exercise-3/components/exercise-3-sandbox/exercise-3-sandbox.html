@@ -3,8 +3,8 @@
     <p class="eyebrow">Sandbox</p>
     <h2>Zone de travail</h2>
     <p>
-      Point de depart classique: le state local repose sur des proprietes et des getters, avec des
-      mises a jour manuelles du titre de page.
+      Point de depart classique: le state local repose sur des proprietes, puis plusieurs valeurs
+      derivees sont recalculees manuellement.
     </p>
   </header>
 
@@ -12,8 +12,8 @@
     <div class="workbench-brief">
       <h3>Consigne</h3>
       <p>
-        Le comportement visuel est deja en place. Le travail consiste a rendre le state plus
-        explicite et reactif avec les primitives Signals d Angular.
+        Le comportement visuel est deja en place. Le travail consiste a remplacer la synchronisation
+        manuelle du state derive par des Signals.
       </p>
       <ol>
         @for (step of steps; track step) {
@@ -48,22 +48,34 @@
       </label>
     </div>
 
+    <div class="actions">
+      <button type="button" (click)="resetFilters()">Reinitialiser les filtres</button>
+    </div>
+
     <section class="summary">
       <p><strong>{{ resultsCount }}</strong> resultat(s) visibles.</p>
+      <p><strong>{{ availableProductsCount }}</strong> produit(s) disponibles.</p>
       <p><strong>Titre de page :</strong> {{ pageTitle }}</p>
     </section>
+
+    @if (showOutOfSyncWarning) {
+      <div class="warning-box">
+        Les champs ont bien ete reinitialises, mais le state derive n a pas ete recalcule. C est
+        exactement le type de desynchronisation que `computed()` permet d eviter.
+      </div>
+    }
 
     <section class="product-panel">
       <h3>Catalogue</h3>
 
       @if (resultsCount > 0) {
         <ul class="product-list">
-          @for (product of filteredProducts; track product.id) {
+          @for (product of displayedProducts; track product.id) {
             <li class="product-card">
               <div class="product-card-head">
                 <div>
                   <p class="product-title">{{ product.name }}</p>
-                  <p class="product-meta">{{ product.category }} · {{ product.price }} €</p>
+                  <p class="product-meta">{{ product.category }} - {{ product.price }} EUR</p>
                 </div>
 
                 <span class="product-status" [class.product-status-off]="!product.available">

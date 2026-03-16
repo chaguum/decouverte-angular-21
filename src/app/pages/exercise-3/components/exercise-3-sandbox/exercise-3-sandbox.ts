@@ -24,13 +24,18 @@ export class Exercise3Sandbox implements OnInit {
 
   protected searchTerm = '';
   protected selectedCategory: ProductCategory = 'all';
+  protected displayedProducts: Product[] = [];
+  protected resultsCount = 0;
+  protected availableProductsCount = 0;
+  protected pageTitle = 'Catalogue produits (0)';
+  protected showOutOfSyncWarning = false;
 
   protected readonly steps = [
     'Transformer searchTerm et selectedCategory en signals.',
-    'Transformer la liste filtree en computed plutot qu en getter classique.',
-    'Creer un compteur de resultats via computed.',
-    'Creer un titre de page derive, puis le synchroniser avec un effect.',
-    'Garder exactement le meme comportement utilisateur.'
+    'Transformer la liste filtree en computed plutot qu en recalcul manuel.',
+    'Creer les compteurs et le titre de page en computed.',
+    'Utiliser un effect pour synchroniser le titre de page.',
+    'Tester le bouton de reset: la sandbox peut se desynchroniser, le resultat non.'
   ] as const;
 
   protected readonly categoryOptions = [
@@ -48,10 +53,26 @@ export class Exercise3Sandbox implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.updatePageTitle();
+    this.refreshDerivedState();
   }
 
-  protected get filteredProducts(): Product[] {
+  protected onSearchChange(value: string): void {
+    this.searchTerm = value;
+    this.refreshDerivedState();
+  }
+
+  protected onCategoryChange(value: ProductCategory): void {
+    this.selectedCategory = value;
+    this.refreshDerivedState();
+  }
+
+  protected resetFilters(): void {
+    this.searchTerm = '';
+    this.selectedCategory = 'all';
+    this.showOutOfSyncWarning = true;
+  }
+
+  private get filteredProducts(): Product[] {
     const search = this.searchTerm.trim().toLowerCase();
 
     return this.products.filter((product) => {
@@ -66,25 +87,12 @@ export class Exercise3Sandbox implements OnInit {
     });
   }
 
-  protected get resultsCount(): number {
-    return this.filteredProducts.length;
-  }
-
-  protected get pageTitle(): string {
-    return `Catalogue produits (${this.resultsCount})`;
-  }
-
-  protected onSearchChange(value: string): void {
-    this.searchTerm = value;
-    this.updatePageTitle();
-  }
-
-  protected onCategoryChange(value: ProductCategory): void {
-    this.selectedCategory = value;
-    this.updatePageTitle();
-  }
-
-  private updatePageTitle(): void {
+  private refreshDerivedState(): void {
+    this.displayedProducts = this.filteredProducts;
+    this.resultsCount = this.displayedProducts.length;
+    this.availableProductsCount = this.displayedProducts.filter((product) => product.available).length;
+    this.pageTitle = `Catalogue produits (${this.resultsCount})`;
     this.title.setTitle(this.pageTitle);
+    this.showOutOfSyncWarning = false;
   }
 }

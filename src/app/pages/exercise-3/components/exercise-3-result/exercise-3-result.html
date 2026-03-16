@@ -11,7 +11,10 @@
   <div class="workbench-panel">
     <div class="workbench-brief">
       <h3>Primitives utilisees</h3>
-      <p>`signal()` pour les sources, `computed()` pour les derivees, `effect()` pour document.title.</p>
+      <p>
+        `signal()` pour les sources, `computed()` pour les derivees, `effect()` pour
+        `document.title`.
+      </p>
     </div>
 
     <div class="filters">
@@ -40,8 +43,13 @@
       </label>
     </div>
 
+    <div class="actions">
+      <button type="button" (click)="resetFilters()">Reinitialiser les filtres</button>
+    </div>
+
     <section class="summary">
       <p><strong>{{ resultsCount() }}</strong> resultat(s) visibles.</p>
+      <p><strong>{{ availableProductsCount() }}</strong> produit(s) disponibles.</p>
       <p><strong>Titre de page :</strong> {{ pageTitle() }}</p>
     </section>
 
@@ -55,7 +63,7 @@
               <div class="product-card-head">
                 <div>
                   <p class="product-title">{{ product.name }}</p>
-                  <p class="product-meta">{{ product.category }} · {{ product.price }} €</p>
+                  <p class="product-meta">{{ product.category }} - {{ product.price }} EUR</p>
                 </div>
 
                 <span class="product-status" [class.product-status-off]="!product.available">
