@@ -1,0 +1,58 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Resultat attendu</p>
+    <h2>Approche moderne avec signal queries</h2>
+    <p>
+      Les queries deviennent des signaux. On peut donc les brancher naturellement sur
+      `computed()` et `effect()`.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <aside class="workbench-brief">
+      <h3>Ce que montre la correction</h3>
+      <p>
+        `viewChild()` et `viewChildren()` vivent directement a cote de `computed()`.
+        `contentChild()` et `contentChildren()` font de meme dans le panneau projete.
+      </p>
+      <ol>
+        <li>Le bouton de focus passe par un `effect()`.</li>
+        <li>Le resume du dashboard vient d un `computed()`.</li>
+        <li>Le panneau projete calcule son propre resume via `contentChildren()`.</li>
+      </ol>
+    </aside>
+
+    <section class="dashboard-shell">
+      <article class="dashboard-card">
+        <label class="field">
+          <span>Recherche</span>
+          <input #searchInput type="text" value="Tarte citron" />
+        </label>
+
+        <button type="button" class="cta-button" (click)="focusSearch()">
+          Focus sur la recherche
+        </button>
+
+        <p class="status-pill">{{ dashboardSummary() }}</p>
+        <p class="status-note">
+          Un `effect()` met aussi a jour le titre de l onglet avec ce resume.
+        </p>
+      </article>
+
+      <section class="stat-grid">
+        @for (stat of stats; track stat.label) {
+          <app-dashboard-stat-card [label]="stat.label" [value]="stat.value" />
+        }
+      </section>
+
+      <app-signal-quick-actions-panel>
+        <h3 #panelTitle>Actions rapides</h3>
+        <div class="action-row">
+          <button type="button" appQuickAction>Nouvelle recette</button>
+          <button type="button" appQuickAction>Publier la selection</button>
+          <button type="button" appQuickAction>Exporter le tableau</button>
+        </div>
+      </app-signal-quick-actions-panel>
+    </section>
+  </div>
+</section>

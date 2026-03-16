@@ -2,10 +2,11 @@
 
 ## Objectif du projet
 
-Le projet sert de support d exercice pour une equipe habituée a Angular 16.
+Le projet sert de support d exercice pour une equipe habituee a Angular 16.
 Le but est de faire decouvrir rapidement les nouveautes Angular jusqu a Angular 21 pendant une demi-journee.
 
 La contrainte principale est la suivante:
+
 - chaque exercice doit etre tres rapide a comprendre et a realiser
 - il faut viser des micro-exercices de 10 a 15 minutes
 - l effort doit porter sur Angular, pas sur l UI
@@ -47,6 +48,7 @@ Chaque exercice doit suivre ce pattern:
 
 Le parent ne doit pas contenir toute la logique du TP.
 Il sert seulement a:
+
 - poser le contexte
 - afficher un switch clair
 - monter soit la sandbox, soit le resultat attendu
@@ -55,6 +57,7 @@ Il sert seulement a:
 
 La sandbox represente le point de depart de l exercice.
 Elle doit etre:
+
 - imparfaite volontairement
 - facile a modifier
 - orientee apprentissage
@@ -67,6 +70,7 @@ Le resultat attendu sert de correction.
 Il doit montrer la cible finale la plus claire possible.
 
 Le composant `Result` doit:
+
 - etre lisible
 - montrer explicitement les imports utiles
 - illustrer la bonne pratique attendue
@@ -79,6 +83,7 @@ Chaque parent d exercice doit afficher un switch tres lisible:
 - `Resultat attendu`
 
 L utilisateur doit comprendre immediatement:
+
 - ou il travaille
 - ou se trouve la correction
 
@@ -99,6 +104,7 @@ Le README doit rester court et pedagogique, avec cette structure:
 9. Ressources officielles
 
 Le ton attendu:
+
 - clair
 - progressif
 - professoral
@@ -141,10 +147,12 @@ Standalone
 ### Intention pedagogique
 
 La sandbox demarre volontairement avec une approche ancienne:
+
 - composant non-standalone
 - `FormsModule` dans un module annexe
 
 La correction montre la cible:
+
 - composants standalone
 - imports locaux
 - formulaire realise avec des composants standalone PrimeNG
@@ -156,21 +164,34 @@ La correction montre la cible:
 - passer a une approche standalone
 - observer la correction finale PrimeNG standalone
 
-## Sujets restants a traiter
+## Sujets actuellement presents dans le projet
 
 Ordre courant:
 
 1. Standalone
 2. Controle de flux + `@let`
 3. Signals
-4. Interop RxJS / Signals
-5. NgRx Signal Store
-6. Signal Forms
-7. `@defer`
+4. Signals et `input` / `output`
+5. Interop RxJS / Signals
+6. NgRx Signal Store
+7. Signal Forms
+8. Signal queries
+
+Correspondance des routes:
+
+- `exercise-1` = Standalone
+- `exercise-2` = Controle de flux + `@let`
+- `exercise-3` = Signals
+- `exercise-3-5` = Signals et input/output
+- `exercise-4` = Interop RxJS / Signals
+- `exercise-5` = NgRx Signal Store
+- `exercise-6` = Signal Forms
+- `exercise-7` = Signal queries
 
 ## Principe general
 
 L agent doit toujours privilegier:
+
 - la clarte pedagogique
 - la rapidite d execution
 - une structure uniforme entre exercices

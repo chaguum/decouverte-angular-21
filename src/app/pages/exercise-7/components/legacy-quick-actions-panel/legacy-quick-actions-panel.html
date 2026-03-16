@@ -1,0 +1,13 @@
+<section class="actions-panel">
+  <header class="actions-header">
+    <p class="eyebrow">Legacy content queries</p>
+    <p class="actions-summary">
+      Titre projete detecte : {{ projectedTitleDetected ? 'oui' : 'non' }} ·
+      Actions projetees : {{ projectedActionsCount }}
+    </p>
+  </header>
+
+  <div class="actions-slot">
+    <ng-content />
+  </div>
+</section>

@@ -1,0 +1,34 @@
+:host {
+  display: block;
+}
+
+.actions-panel {
+  border: 1px solid #e9d5ff;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.actions-header {
+  margin-bottom: 0.85rem;
+}
+
+.eyebrow,
+.actions-summary {
+  margin: 0;
+}
+
+.eyebrow {
+  font-weight: 700;
+  color: #6d28d9;
+}
+
+.actions-summary {
+  margin-top: 0.35rem;
+  color: #5b21b6;
+}
+
+.actions-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
