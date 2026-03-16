@@ -74,29 +74,56 @@ Pour adopter standalone, retenez ces trois reflexes:
 
 Autrement dit: on remplace une organisation "par module" par une organisation "par composant".
 
+## Architecture de l exercice
+
+L exercice est organise en trois composants clairement separes:
+
+- `Exercise1` : le composant parent de la page
+- `Exercise1Sandbox` : la version de travail pour les developpeurs
+- `Exercise1Result` : la correction finale attendue
+
+Cette separation est volontaire.
+Elle permet de bien distinguer:
+- ce que l equipe doit modifier
+- ce que donne une implementation finale propre
+
 ## Mission
 
-Votre mission est de construire une petite fiche collaborateur composee de:
-- un parent `Exercise1`
-- un composant `MemberProfileCard`
-- un composant `MemberSkillList`
+Votre mission est de partir du composant `Exercise1Sandbox`, qui contient un formulaire HTML natif,
+puis de comprendre ce que montre la correction `Exercise1Result`.
 
-Le but n est pas de faire une grosse feature.
-Le but est de ressentir concretement ce que change standalone dans la structure du code.
+Dans cette correction, la solution cible est:
+- un formulaire realise avec des composants standalone PrimeNG
+- des imports declares directement dans le composant
+- aucune dependance a un `NgModule`
+
+Le point de depart de la sandbox est volontairement plus ancien:
+- le composant n est pas standalone
+- `FormsModule` est importe via un module annexe
+
+L une des transformations attendues consiste donc a remettre `FormsModule` au bon endroit et a
+faire disparaitre cette dependance au module.
+
+Le formulaire peut rester simple.
+Ce n est pas un exercice d UI.
+Le vrai sujet est l import local des composants standalone.
 
 ## Ce que vous devez comprendre a la fin
 
 - pourquoi Angular cherche a reduire la dependance aux `NgModule`
-- comment un parent standalone importe directement ses enfants
+- comment un parent standalone compose une page avec d autres composants standalone
 - comment une route charge un composant sans module de feature
 - pourquoi cette approche simplifie les petites features et le lazy loading
+- pourquoi `FormsModule` et les composants PrimeNG doivent etre importes directement la ou ils servent
 
 ## Criteres de validation
 
 - aucun `NgModule` n est cree pour cette feature
 - la page est chargee via `loadComponent`
-- le parent importe directement ses composants enfants
-- chaque composant declare uniquement les imports dont il a besoin
+- le parent importe `Exercise1Sandbox` et `Exercise1Result`
+- la version de depart utilise encore un module pour porter `FormsModule`
+- `Exercise1Result` importe uniquement les composants standalone PrimeNG necessaires
+- le comportement fonctionnel du formulaire reste identique entre sandbox et correction
 
 ## Ressources officielles
 

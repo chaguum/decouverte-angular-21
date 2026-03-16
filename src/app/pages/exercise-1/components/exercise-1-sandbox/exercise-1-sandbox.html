@@ -1,0 +1,72 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Sandbox</p>
+    <h2>Zone de travail</h2>
+    <p>
+      Point de depart volontairement simple: un formulaire HTML natif. Votre objectif est de le
+      transformer en version PrimeNG standalone.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>Consigne</h3>
+      <p>
+        Etat initial volontairement legacy: ce composant n est pas standalone et depend d un
+        module pour `FormsModule`.
+      </p>
+      <ol>
+        @for (step of steps; track step) {
+          <li>{{ step }}</li>
+        }
+      </ol>
+    </div>
+
+    <div class="workbench-content">
+      <form class="form-column">
+        <h3>Formulaire de base</h3>
+
+        <label for="sandbox-name">Nom</label>
+        <input id="sandbox-name" name="sandbox-name" type="text" [(ngModel)]="profile.name" />
+
+        <label for="sandbox-email">Email</label>
+        <input
+          id="sandbox-email"
+          name="sandbox-email"
+          type="email"
+          [(ngModel)]="profile.email"
+        />
+
+        <label for="sandbox-role">Role</label>
+        <select id="sandbox-role" name="sandbox-role" [(ngModel)]="profile.role">
+          <option>Developpeur Angular</option>
+          <option>Lead dev</option>
+          <option>QA</option>
+          <option>Product Owner</option>
+        </select>
+
+        <label for="sandbox-bio">Bio</label>
+        <textarea id="sandbox-bio" name="sandbox-bio" rows="6" [(ngModel)]="profile.bio"></textarea>
+
+        <label class="checkbox-line">
+          <input
+            type="checkbox"
+            name="sandbox-newsletter"
+            [(ngModel)]="profile.wantsNewsletter"
+          />
+          <span>Recevoir la newsletter interne</span>
+        </label>
+      </form>
+
+      <section class="preview-column">
+        <h3>Apercu</h3>
+        <p><strong>Nom :</strong> {{ profile.name || 'A renseigner' }}</p>
+        <p><strong>Email :</strong> {{ profile.email || 'A renseigner' }}</p>
+        <p><strong>Role :</strong> {{ profile.role || 'A renseigner' }}</p>
+        <p><strong>Newsletter :</strong> {{ profile.wantsNewsletter ? 'Oui' : 'Non' }}</p>
+        <p><strong>Bio :</strong></p>
+        <p>{{ profile.bio || 'Aucune bio pour le moment.' }}</p>
+      </section>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,78 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Resultat attendu</p>
+    <h2>Correction PrimeNG standalone</h2>
+    <p>
+      Ici, la meme intention fonctionnelle est implementee avec des composants standalone PrimeNG
+      importes directement dans le composant.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>Imports utilises</h3>
+      <code>
+        FormsModule, InputText, Textarea, Select, Checkbox, Button
+      </code>
+    </div>
+
+    <div class="workbench-content">
+      <form class="form-column">
+        <h3>Formulaire PrimeNG</h3>
+
+        <label for="result-name">Nom</label>
+        <input id="result-name" name="result-name" type="text" pInputText [(ngModel)]="profile.name" />
+
+        <label for="result-email">Email</label>
+        <input
+          id="result-email"
+          name="result-email"
+          type="email"
+          pInputText
+          [(ngModel)]="profile.email"
+        />
+
+        <label for="result-role">Role</label>
+        <p-select
+          inputId="result-role"
+          name="result-role"
+          [options]="roles"
+          optionLabel="label"
+          optionValue="value"
+          [(ngModel)]="profile.role"
+        />
+
+        <label for="result-bio">Bio</label>
+        <textarea
+          id="result-bio"
+          name="result-bio"
+          rows="6"
+          pTextarea
+          [(ngModel)]="profile.bio"
+        ></textarea>
+
+        <div class="checkbox-line">
+          <p-checkbox
+            inputId="result-newsletter"
+            name="result-newsletter"
+            [binary]="true"
+            [(ngModel)]="profile.wantsNewsletter"
+          />
+          <label for="result-newsletter">Recevoir la newsletter interne</label>
+        </div>
+
+        <p-button type="button" label="Enregistrer" />
+      </form>
+
+      <section class="preview-column">
+        <h3>Apercu</h3>
+        <p><strong>Nom :</strong> {{ profile.name || 'A renseigner' }}</p>
+        <p><strong>Email :</strong> {{ profile.email || 'A renseigner' }}</p>
+        <p><strong>Role :</strong> {{ profile.role || 'A renseigner' }}</p>
+        <p><strong>Newsletter :</strong> {{ profile.wantsNewsletter ? 'Oui' : 'Non' }}</p>
+        <p><strong>Bio :</strong></p>
+        <p>{{ profile.bio || 'Aucune bio pour le moment.' }}</p>
+      </section>
+    </div>
+  </div>
+</section>
