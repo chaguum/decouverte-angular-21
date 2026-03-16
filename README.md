@@ -901,21 +901,36 @@ Tres utile quand:
 ### Avant
 
 ```ts
-readonly products = signal<Product[]>([]);
-readonly favoriteIds = signal<number[]>([]);
-readonly loading = signal(false);
-readonly errorMessage = signal<string | null>(null);
+@Component({
+  selector: 'app-products-page',
+  template: `...`
+})
+export class ProductsPageComponent {
+  private readonly productService = inject(ProductService);
 
-async loadProducts(): Promise<void> {
-  this.loading.set(true);
+  readonly products = signal<Product[]>([]);
+  readonly favoriteIds = signal<number[]>([]);
+  readonly loading = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
-  try {
-    this.products.set(await fetchProducts());
-  } finally {
-    this.loading.set(false);
+  async loadProducts(): Promise<void> {
+    this.loading.set(true);
+
+    try {
+      this.products.set(await this.productService.loadProducts());
+    } finally {
+      this.loading.set(false);
+    }
   }
 }
 ```
+
+Ici, le composant:
+
+- injecte le service
+- porte lui-meme l etat
+- pilote lui-meme le chargement
+- doit etre remonte sur chaque vue qui en a besoin
 
 ### Maintenant
 
@@ -930,7 +945,15 @@ export const ProductsStore = signalStore(
   withComputed((store) => ({
     favoriteCount: computed(() => store.favoriteIds().length)
   })),
-  withMethods((store) => ({
+  withMethods((store, productService = inject(ProductService)) => ({
+    async loadProducts() {
+      if (store.entities().length > 0) {
+        return;
+      }
+
+      const products = await productService.loadProducts();
+      patchState(store, setAllEntities(products));
+    },
     toggleFavorite(productId: number) {
       const isFavorite = store.favoriteIds().includes(productId);
 
@@ -948,6 +971,27 @@ export const ProductsStore = signalStore(
   })
 );
 ```
+
+Puis, le composant devient beaucoup plus simple:
+
+```ts
+@Component({
+  selector: 'app-products-page',
+  template: `...`
+})
+export class ProductsPageComponent {
+  readonly store = inject(ProductsStore);
+}
+```
+
+Ici, le service existe toujours.
+La difference, c est que le composant n orchestre plus lui-meme le chargement.
+Le store devient l endroit central qui:
+
+- appelle le service
+- garde l etat en memoire
+- expose les derivees
+- mutualise la logique entre plusieurs vues
 
 ### Vocabulaire cle
 
