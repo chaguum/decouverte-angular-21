@@ -1,0 +1,107 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Resultat attendu</p>
+    <h2>Etat partage avec un NgRx Signal Store</h2>
+    <p>
+      Ici, le store est applicatif. Tant que l application SPA tourne, les produits deja
+      charges et les favoris restent en memoire, meme si vous changez de page.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <aside class="workbench-brief">
+      <h3>Ce que montre la correction</h3>
+      <p>
+        `withState` porte l etat brut, `withComputed` les derivees, `withMethods` les
+        actions, `withHooks` le chargement initial et `withStatus()` le cycle
+        `idle / pending / fulfilled / error`.
+      </p>
+      <ol>
+        <li>Allez sur un autre exercice puis revenez ici.</li>
+        <li>Observez que les donnees sont toujours presentes.</li>
+        <li>
+          Regardez le compteur: aucun nouvel appel n est lance si le store possede deja les
+          produits.
+        </li>
+      </ol>
+    </aside>
+
+    <section class="toolbar">
+      <div class="toolbar-actions">
+        <button type="button" (click)="store.reloadProducts()">
+          Recharger volontairement
+        </button>
+        <button type="button" (click)="store.simulateErrorReload()">
+          Simuler une erreur
+        </button>
+        <button type="button" class="danger-button" (click)="store.clearStore()">
+          Vider le store
+        </button>
+      </div>
+
+      <div class="filter-group" aria-label="Filtre des produits">
+        @for (filterOption of filters; track filterOption.value) {
+          <button
+            type="button"
+            [class.active]="store.filter() === filterOption.value"
+            (click)="setFilter(filterOption.value)"
+          >
+            {{ filterOption.label }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <section class="summary">
+      <p><strong>Statut :</strong> {{ store.statusText() }}</p>
+      <p><strong>Requetes lancees :</strong> {{ store.requestCount() }}</p>
+      <p><strong>Dernier chargement :</strong> {{ store.lastLoadedAt() ?? 'Aucun' }}</p>
+      <p><strong>Favoris :</strong> {{ store.favoriteCount() }}</p>
+      <p><strong>Favoris disponibles :</strong> {{ store.availableFavoritesCount() }}</p>
+    </section>
+
+    @if (store.hasErrorMessage()) {
+      <p class="status-box status-error" role="alert">
+        {{ store.errorMessage() }}
+      </p>
+    }
+
+    <section class="catalog-panel">
+      <h3>Catalogue partage</h3>
+
+      @if (store.visibleProducts().length > 0) {
+        <ul class="product-list">
+          @for (product of store.visibleProducts(); track product.id) {
+            <li class="product-card">
+              <div class="product-card-head">
+                <div>
+                  <p class="product-title">{{ product.name }}</p>
+                  <p class="product-meta">
+                    {{ product.category }} · {{ product.price.toFixed(2) }} €
+                  </p>
+                </div>
+
+                <span
+                  class="product-status"
+                  [class.product-status-off]="!product.available"
+                >
+                  {{ product.available ? 'Disponible' : 'Indisponible' }}
+                </span>
+              </div>
+
+              <button type="button" (click)="store.toggleFavorite(product.id)">
+                {{
+                  store.favoriteIds().includes(product.id)
+                    ? 'Retirer des favoris'
+                    : 'Ajouter aux favoris'
+                }}
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="empty-state">Aucun produit a afficher dans cette vue.</p>
+      }
+    </section>
+  </div>
+</section>

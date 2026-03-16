@@ -1,1 +1,14 @@
-<app-topic-placeholder [topic]="topic" />
+<section class="exercise-page">
+  <header class="exercise-header">
+    <p>Exercice 5 : {{ topic.label }}</p>
+    <h1>Centraliser un etat partage avec NgRx Signal Store</h1>
+  </header>
+
+  <div class="exercise-stage">
+    @if (viewMode() === 'sandbox') {
+      <app-exercise-5-sandbox />
+    } @else {
+      <app-exercise-5-result />
+    }
+  </div>
+</section>

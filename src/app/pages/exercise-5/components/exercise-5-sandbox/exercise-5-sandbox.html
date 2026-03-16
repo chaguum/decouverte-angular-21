@@ -1,0 +1,92 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Sandbox</p>
+    <h2>Etat local dans le composant</h2>
+    <p>
+      Ici, tout vit dans le composant. Si vous quittez la page puis revenez, on recharge
+      les donnees et on repart d un etat vide.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <aside class="workbench-brief">
+      <h3>Consigne</h3>
+      <p>
+        Cette version montre un point de depart classique. La logique de chargement, les
+        favoris, les derivees et le statut sont tous portes par le composant.
+      </p>
+      <ol>
+        <li>Chargez les produits et observez le compteur de requetes.</li>
+        <li>Ajoutez quelques favoris, puis changez le filtre.</li>
+        <li>Imaginez maintenant le meme besoin partage sur plusieurs pages.</li>
+      </ol>
+    </aside>
+
+    <section class="toolbar">
+      <div class="toolbar-actions">
+        <button type="button" (click)="loadProducts()">Recharger</button>
+        <button type="button" (click)="loadProducts(true)">Simuler une erreur</button>
+      </div>
+
+      <div class="filter-group" aria-label="Filtre des produits">
+        @for (filterOption of filters; track filterOption.value) {
+          <button
+            type="button"
+            [class.active]="filter === filterOption.value"
+            (click)="setFilter(filterOption.value)"
+          >
+            {{ filterOption.label }}
+          </button>
+        }
+      </div>
+    </section>
+
+    <section class="summary">
+      <p><strong>Statut :</strong> {{ status }}</p>
+      <p><strong>Requetes lancees :</strong> {{ requestCount }}</p>
+      <p><strong>Dernier chargement :</strong> {{ lastLoadedAt ?? 'Aucun' }}</p>
+      <p><strong>Favoris :</strong> {{ favoriteCount }}</p>
+      <p><strong>Favoris disponibles :</strong> {{ availableFavoritesCount }}</p>
+    </section>
+
+    @if (errorMessage) {
+      <p class="status-box status-error" role="alert">
+        {{ errorMessage }}
+      </p>
+    }
+
+    <section class="catalog-panel">
+      <h3>Catalogue local</h3>
+
+      @if (visibleProducts.length > 0) {
+        <ul class="product-list">
+          @for (product of visibleProducts; track product.id) {
+            <li class="product-card">
+              <div class="product-card-head">
+                <div>
+                  <p class="product-title">{{ product.name }}</p>
+                  <p class="product-meta">
+                    {{ product.category }} · {{ product.price.toFixed(2) }} €
+                  </p>
+                </div>
+
+                <span
+                  class="product-status"
+                  [class.product-status-off]="!product.available"
+                >
+                  {{ product.available ? 'Disponible' : 'Indisponible' }}
+                </span>
+              </div>
+
+              <button type="button" (click)="toggleFavorite(product.id)">
+                {{ favoriteIds.includes(product.id) ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
+              </button>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="empty-state">Aucun produit a afficher dans cette vue.</p>
+      }
+    </section>
+  </div>
+</section>
