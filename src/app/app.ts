@@ -24,8 +24,12 @@ export class App {
 
   protected readonly title = 'ATOS Angular 21 Workshop';
   protected readonly topics = WORKSHOP_TOPICS;
-  protected readonly isExercise1Route = computed(() => this.currentUrl().startsWith('/exercise-1'));
-  protected readonly exercise1ViewMode = computed<'sandbox' | 'result'>(() => {
+  protected readonly currentExercisePath = computed(() => {
+    const path = this.currentUrl().split('?')[0] ?? '';
+    return /^\/exercise-\d+$/.test(path) ? path : null;
+  });
+  protected readonly isExerciseRoute = computed(() => this.currentExercisePath() !== null);
+  protected readonly exerciseViewMode = computed<'sandbox' | 'result'>(() => {
     const view = this.router.parseUrl(this.currentUrl()).queryParams['view'];
     return view === 'result' ? 'result' : 'sandbox';
   });

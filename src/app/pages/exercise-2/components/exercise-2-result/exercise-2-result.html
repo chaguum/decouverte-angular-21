@@ -1,0 +1,79 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Resultat attendu</p>
+    <h2>Template moderne avec &#64;if, &#64;for et &#64;let</h2>
+    <p>
+      La logique fonctionnelle reste strictement la meme. Seule l ecriture du template evolue pour
+      gagner en lisibilite.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>Imports utilises</h3>
+      <p>`FormsModule` uniquement. `CommonModule` n est plus necessaire pour le controle de flux.</p>
+    </div>
+
+    <div class="filters">
+      <label>
+        Recherche
+        <input
+          type="text"
+          name="movie-search"
+          [(ngModel)]="searchTerm"
+          placeholder="Titre ou genre"
+        />
+      </label>
+
+      <label>
+        Statut
+        <select name="movie-status" [(ngModel)]="statusFilter">
+          <option value="all">Tous</option>
+          <option value="watched">Deja vus</option>
+          <option value="todo">A voir</option>
+        </select>
+      </label>
+    </div>
+
+    @let visibleMovies = filteredMovies;
+    @let visibleMoviesCount = visibleMovies.length;
+    @let currentFilterLabel = statusLabels[statusFilter];
+
+    <section class="summary">
+      <p><strong>{{ visibleMoviesCount }}</strong> film(s) correspondent au filtre.</p>
+
+      @if (visibleMoviesCount > 0) {
+        <p>Filtre actif : {{ currentFilterLabel }}</p>
+      } @else {
+        <p>Aucun film ne correspond a votre recherche.</p>
+      }
+    </section>
+
+    <section class="movie-panel">
+      <h3>Liste des films</h3>
+
+      @if (visibleMoviesCount > 0) {
+        <ul class="movie-list">
+          @for (movie of visibleMovies; track movie.id; let index = $index) {
+            <li class="movie-card">
+              <div class="movie-card-head">
+                <div>
+                  <p class="movie-title">#{{ index + 1 }} · {{ movie.title }}</p>
+                  <p class="movie-meta">{{ movie.genre }} · {{ movie.year }}</p>
+                </div>
+
+                <span class="movie-status" [class.movie-status-seen]="movie.seen">
+                  {{ movie.seen ? 'Deja vu' : 'A voir' }}
+                </span>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty-state">
+          Aucun film trouve. Changez la recherche ou le filtre pour faire reapparaitre la liste.
+        </div>
+      }
+    </section>
+  </div>
+</section>

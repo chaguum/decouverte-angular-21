@@ -2,88 +2,89 @@
 
 ## Contexte
 
-Pendant des annees, les templates Angular ont ete ecrits avec `*ngIf`, `*ngFor` et `*ngSwitch`.
-Si vous venez d Angular 16, c est probablement encore votre ecriture naturelle.
+Si votre equipe vient d Angular 16, elle ecrit probablement encore ses templates avec
+`*ngIf`, `*ngFor` et parfois `*ngSwitch`.
 
-Depuis Angular 17, Angular propose une nouvelle syntaxe de controle de flux:
-`@if`, `@for`, `@switch` et `@let`.
+Cela fonctionne tres bien, mais Angular a introduit une nouvelle ecriture pour rendre les
+templates plus directs a lire: `@if`, `@for`, `@switch` et `@let`.
 
-Ce n est pas juste une variation de style.
-L objectif est de rendre les templates plus proches d une vraie logique de lecture, plus lisibles,
-et plus faciles a maintenir.
+Dans cet exercice, nous restons sur un cas volontairement tres simple: une liste de films avec
+une recherche et un filtre.
 
-## Pourquoi ce changement ?
+## Pourquoi Angular a introduit ce changement
 
-L ancienne syntaxe a fonctionne tres longtemps, mais elle avait deux limites pedagogiques:
-- elle etait basee sur des directives structurelles un peu "speciales"
-- elle devenait vite difficile a lire quand on imbriquait plusieurs conditions et boucles
+Le but n est pas seulement d avoir une syntaxe "plus moderne".
+Le vrai objectif est pedagogique et pratique:
 
-La nouvelle syntaxe rend le template plus direct.
-Quand on lit `@if` ou `@for`, on comprend tout de suite l intention.
+- rendre l intention du template plus visible
+- reduire l effet "directive speciale" de `*ngIf` et `*ngFor`
+- mieux structurer les templates un peu plus riches
+- eviter de repeter des expressions avec `@let`
 
-`@let` apporte aussi une vraie amelioration:
-il permet de nommer une valeur intermediaire dans le template au lieu de repeter une expression.
+La documentation Angular insiste aussi sur l importance du `track` dans `@for`, car il aide
+Angular a faire le minimum de mises a jour DOM quand la collection change.
 
 ## Ce qu on faisait avant
 
-```html
-<section *ngIf="user">
-  <li *ngFor="let skill of user.skills; trackBy: trackSkill">
-    {{ skill }}
-  </li>
-</section>
-```
+Dans la sandbox, le template demarre avec une approche classique:
 
-Cela marche, mais la lecture devient vite plus lourde quand le template grossit.
+- `*ngIf` pour afficher ou non une section
+- `*ngFor` pour parcourir les films
+- plusieurs acces repetes a `filteredMovies.length`
+- `CommonModule` importe uniquement pour recuperer les directives structurelles
+
+Cette approche reste valide, mais elle devient plus verbeuse quand le template grossit.
 
 ## Ce qu on fait maintenant
 
-```html
-@if (user; as currentUser) {
-  @let skills = currentUser.skills;
+Dans le resultat attendu, le meme ecran est reecrit avec:
 
-  @for (skill of skills; track skill) {
-    <li>{{ skill }}</li>
-  }
-}
-```
+- `@if` pour les branches conditionnelles
+- `@for` pour la liste
+- `track movie.id` directement dans la boucle
+- `@let` pour nommer des valeurs intermediaires comme la liste visible ou son compteur
 
-Le code est plus lineaire, plus explicite, et plus simple a expliquer a quelqu un qui decouvre Angular.
+Un point important a observer:
+dans ce resultat, `CommonModule` n est plus necessaire pour le controle de flux.
+Le composant garde seulement `FormsModule` pour le formulaire.
 
-## Mise en place
+## Architecture de l exercice
 
-Voici les idees a retenir:
+- `Exercise2` affiche le contexte de l exercice et choisit la vue
+- `Exercise2Sandbox` montre le point de depart en syntaxe historique
+- `Exercise2Result` montre la correction en syntaxe moderne Angular
 
-1. `@if` remplace les cas simples de `*ngIf`.
-2. `@for` remplace `*ngFor`, avec `track` directement visible.
-3. `@let` permet d eviter les expressions repetees.
-
-Cette syntaxe est faite pour clarifier le template, pas pour faire "plus moderne" gratuitement.
+Le switch du header permet de passer rapidement de la zone de travail a la correction.
 
 ## Mission
 
-Transformer un template existant:
-- remplacer `*ngIf` par `@if`
-- remplacer `*ngFor` par `@for`
-- utiliser `@let` pour extraire une valeur repetee
+Votre objectif est de transformer le template de la sandbox sans changer le comportement
+fonctionnel de la page.
 
-L exercice doit rester court:
-on veut observer le gain de lisibilite, pas construire une grosse logique.
+Ce que vous devez faire:
 
-## Ce que vous devez comprendre a la fin
+1. remplacer `*ngIf` par `@if`
+2. remplacer `*ngFor` par `@for`
+3. ajouter un `track` pertinent
+4. introduire `@let` pour eviter de repeter une expression du template
+5. supprimer `CommonModule` si vous n en avez plus besoin
 
-- pourquoi Angular a modernise l ecriture des templates
-- quand `@let` ameliore reellement la lecture
-- pourquoi `track` reste important avec `@for`
+## Ce que l equipe doit comprendre a la fin
+
+- la nouvelle syntaxe de controle de flux n est pas un gadget
+- `@for` rend le `track` plus visible
+- `@let` sert a clarifier le template, pas a faire "plus clever"
+- un template moderne Angular peut devenir plus lisible avec moins de bruit
 
 ## Criteres de validation
 
-- le template n utilise plus `*ngIf` ni `*ngFor`
-- `@let` est utilise au moins une fois de facon pertinente
-- la page garde exactement le meme comportement fonctionnel
+- le template final n utilise plus `*ngIf` ni `*ngFor`
+- `@let` est utilise de maniere utile
+- la liste des films se comporte exactement comme avant
+- `track` repose sur une cle stable
+- `CommonModule` a disparu si le composant n utilise plus les anciennes directives
 
 ## Ressources officielles
 
 - Control flow: [https://angular.dev/guide/templates/control-flow](https://angular.dev/guide/templates/control-flow)
-- Template variables et `@let`: [https://angular.dev/guide/templates/variables](https://angular.dev/guide/templates/variables)
-
+- Variables en template et `@let`: [https://angular.dev/guide/templates/variables](https://angular.dev/guide/templates/variables)

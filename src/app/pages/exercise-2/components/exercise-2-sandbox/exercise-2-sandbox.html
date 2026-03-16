@@ -1,0 +1,77 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Sandbox</p>
+    <h2>Zone de travail</h2>
+    <p>
+      Point de depart volontairement classique: un template avec `*ngIf` et `*ngFor`, comme on en
+      voit tres souvent dans un projet Angular 16.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>Consigne</h3>
+      <p>
+        Le comportement doit rester identique. Le but est uniquement de moderniser l ecriture du
+        template et d eviter les repetitions inutiles.
+      </p>
+      <ol>
+        @for (step of steps; track step) {
+          <li>{{ step }}</li>
+        }
+      </ol>
+    </div>
+
+    <div class="filters">
+      <label>
+        Recherche
+        <input
+          type="text"
+          name="movie-search"
+          [(ngModel)]="searchTerm"
+          placeholder="Titre ou genre"
+        />
+      </label>
+
+      <label>
+        Statut
+        <select name="movie-status" [(ngModel)]="statusFilter">
+          <option value="all">Tous</option>
+          <option value="watched">Deja vus</option>
+          <option value="todo">A voir</option>
+        </select>
+      </label>
+    </div>
+
+    <section class="summary">
+      <p><strong>{{ filteredMovies.length }}</strong> film(s) correspondent au filtre.</p>
+      <p *ngIf="filteredMovies.length > 0">Filtre actif : {{ statusLabels[statusFilter] }}</p>
+      <p *ngIf="filteredMovies.length === 0">Aucun film ne correspond a votre recherche.</p>
+    </section>
+
+    <section class="movie-panel">
+      <h3>Liste des films</h3>
+
+      <ul *ngIf="filteredMovies.length > 0; else emptyState" class="movie-list">
+        <li *ngFor="let movie of filteredMovies; trackBy: trackMovie" class="movie-card">
+          <div class="movie-card-head">
+            <div>
+              <p class="movie-title">{{ movie.title }}</p>
+              <p class="movie-meta">{{ movie.genre }} · {{ movie.year }}</p>
+            </div>
+
+            <span class="movie-status" [class.movie-status-seen]="movie.seen">
+              {{ movie.seen ? 'Deja vu' : 'A voir' }}
+            </span>
+          </div>
+        </li>
+      </ul>
+
+      <ng-template #emptyState>
+        <div class="empty-state">
+          Aucun film trouve. Changez la recherche ou le filtre pour faire reapparaitre la liste.
+        </div>
+      </ng-template>
+    </section>
+  </div>
+</section>
