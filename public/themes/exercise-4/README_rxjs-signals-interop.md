@@ -2,21 +2,22 @@
 
 ## Contexte
 
-Une equipe venant d Angular 16 ne va pas abandonner RxJS du jour au lendemain, et ce ne serait
-pas une bonne idee.
+Une equipe venant d Angular 16 ne va pas abandonner RxJS du jour au lendemain.
+Et ce ne serait pas une bonne idee.
 
-Le vrai sujet n est donc pas "Signals ou RxJS ?".
-Le vrai sujet est: "Comment faire cohabiter les deux proprement ?"
+Le bon sujet n est donc pas:
 
-Cet exercice sert aussi a clarifier un point de culture generale:
-Promises, Observables et Signals ne repondent pas aux memes besoins.
+> Est-ce qu on remplace RxJS par Signals ?
 
-## Promises, Observables, Signals: trois roles differents
+Le bon sujet est:
+
+> Comment faire cohabiter RxJS et Signals proprement ?
+
+## Promise, Observable, Signal : trois roles differents
 
 ### Promise
 
 Une Promise represente en general un resultat unique a venir.
-Exemple: recuperer une ressource une seule fois.
 
 ```ts
 async function loadUser(): Promise<User> {
@@ -25,23 +26,15 @@ async function loadUser(): Promise<User> {
 }
 ```
 
-Ce que cela fait:
+Ce que cela signifie:
 
-- le code lance une operation asynchrone
-- la Promise se resout une seule fois
-- vous recevez une valeur finale unique
-- si la valeur change plus tard, la Promise ne vous prevenira pas
-
-Une Promise est donc adaptee a:
-
-- un appel HTTP unique
-- une initialisation simple
-- un traitement ponctuel
+- l operation se resout une seule fois
+- on obtient une valeur finale unique
+- la Promise ne represente pas un flux continu
 
 ### Observable
 
-Un Observable represente un flux dans le temps.
-Exemple: WebSocket, formulaire, evenement, polling, combinaison de flux.
+Un Observable represente un flux de valeurs dans le temps.
 
 ```ts
 readonly query$ = new BehaviorSubject('');
@@ -56,24 +49,15 @@ readonly filteredProducts$ = combineLatest([
 );
 ```
 
-Ce que cela fait:
+Ce que cela signifie:
 
-- `query$` peut emettre plusieurs valeurs au fil du temps
-- `products$` peut lui aussi emettre plusieurs fois
-- `combineLatest()` recalcule a chaque nouvelle emission
-- le composant manipule donc un vrai flux continu
-
-Un Observable est bien adapte a:
-
-- une suite d evenements utilisateur
-- un stream websocket
-- une composition de flux
-- des pipelines RxJS complexes
+- il peut y avoir plusieurs emissions
+- on peut combiner plusieurs flux
+- chaque nouvelle emission peut recalculer le resultat
 
 ### Signal
 
 Un Signal represente une valeur reactive courante.
-Exemple: etat local, vue derivee, interaction directe avec le template Angular.
 
 ```ts
 readonly query = signal('');
@@ -83,110 +67,86 @@ readonly filteredProducts = computed(() =>
 );
 ```
 
-Ce que cela fait:
+Ce que cela signifie:
 
-- `query` represente une valeur courante lisible immediatement
-- `filteredProducts` se recalcule automatiquement quand `query()` ou `products()` changent
-- le template Angular peut lire directement cette valeur courante
-- on ne manipule pas un pipeline de flux, mais un state local derive
+- on lit directement la valeur courante
+- on derive facilement des valeurs d affichage
+- le template Angular peut consommer cette valeur tres simplement
 
-Un Signal est bien adapte a:
-
-- un state local de composant
-- un compteur, un filtre, un tri
-- des derivees d affichage
-- une lecture simple dans le template
-
-Resume rapide:
+### Resume simple
 
 - `Promise` = une valeur unique plus tard
 - `Observable` = plusieurs valeurs dans le temps
-- `Signal` = la valeur courante reactive, facile a lire dans Angular
+- `Signal` = la valeur courante reactive
 
-Le bon raisonnement n est pas de choisir un "vainqueur".
-Le bon raisonnement est de choisir l outil adapte.
+Le bon raisonnement n est pas de choisir un vainqueur.
+Le bon raisonnement est de choisir l outil adapte au probleme traite.
 
-## Pourquoi Angular a ajoute une interop officielle ?
+## Pourquoi Angular a ajoute une interop officielle
 
-Parce qu Angular sait tres bien qu un projet moderne contient souvent:
+Angular sait tres bien qu un projet moderne contient souvent:
 
-- des APIs Angular basees sur signals
-- des services et streams historiques en RxJS
+- des services historiques en RxJS
+- des composants recents qui beneficieraient de Signals
 
-Angular fournit donc une interop officielle pour relier ces deux mondes sans bricolage.
+L interop officielle permet de relier ces deux mondes sans bricolage.
 
 ## Ce qu on faisait avant
 
-Dans la sandbox, le service expose un `Observable` de suggestions produits.
-Le composant consomme ce flux de maniere 100% RxJS:
+Avant, le composant pouvait rester 100% RxJS:
 
-- `BehaviorSubject` pour la recherche
-- `combineLatest()` pour recouper le flux distant et le filtre local
-- `map()` pour produire la liste filtree
-- `async` dans le template
+```ts
+readonly filteredProducts$ = combineLatest([
+  this.productStream$,
+  this.query$
+]).pipe(
+  map(([products, query]) => filterProducts(products, query))
+);
+```
 
-Cette approche est correcte, mais elle devient vite plus verbeuse cote composant, surtout pour un
-besoin d affichage simple.
+Cette approche est correcte.
+Mais pour une simple UI de filtre, elle peut devenir verbeuse cote composant.
 
 ## Ce qu on fait maintenant
 
-Les outils les plus utiles sont:
-
-- `toSignal()` pour consommer un Observable comme une valeur reactive dans un composant
-- `toObservable()` pour retransformer un signal en Observable quand c est utile
-
-Exemple tres simple:
+Angular fournit `toSignal()` pour transformer un `Observable` en valeur reactive courante lisible dans le composant.
 
 ```ts
 readonly products = toSignal(this.productService.products$, {
   initialValue: []
 });
 
-readonly filteredProducts = computed(() => {
-  const query = this.searchTerm().trim().toLowerCase();
+readonly query = signal('');
 
-  return this.products().filter((product) => {
-    return query.length === 0 || product.name.toLowerCase().includes(query);
-  });
+readonly filteredProducts = computed(() => {
+  return this.products().filter((product) =>
+    product.name.toLowerCase().includes(this.query().toLowerCase())
+  );
 });
 ```
 
-Ici:
+Ce qu il faut bien comprendre:
 
-- `products$` reste un `Observable` dans le service
-- `toSignal()` donne au composant une valeur courante lisible avec `products()`
-- `computed()` permet ensuite de deriver une vue locale tres simplement
-
-Dans le resultat attendu de cet exercice:
-
-- le service continue d exposer `products$` en RxJS
-- le composant appelle `toSignal(products$)`
-- la recherche locale devient un `signal()`
-- la liste filtree devient un `computed()`
-
-Le flux source ne change donc pas de nature.
-On change uniquement la facon dont le composant lit sa valeur courante.
+- le service reste en RxJS
+- le composant consomme ensuite une valeur courante avec `toSignal()`
+- les derivees d affichage deviennent plus simples avec `computed()`
 
 ## Architecture de l exercice
 
-- `Exercise4` joue le role de parent
-- `Exercise4Sandbox` montre une consommation RxJS classique dans le composant
-- `Exercise4Result` montre l usage de `toSignal()` pour simplifier la lecture du flux
-
-Le but pedagogique est de comprendre le pont entre un service RxJS et une UI Angular moderne.
+- `Exercise4` : le parent de page
+- `Exercise4Sandbox` : une consommation RxJS classique
+- `Exercise4Result` : la meme logique lue via `toSignal()`
 
 ## Mission
 
-Partir d un flux RxJS existant et:
+Votre objectif est de partir d un flux RxJS existant et de:
 
-- le convertir en signal avec `toSignal()`
-- l afficher dans le template
-- faire le filtre local avec `computed()`
-- comparer mentalement ce qui reste un flux et ce qui devient une valeur courante
+1. le convertir en signal avec `toSignal()`
+2. l afficher dans le template
+3. faire le filtre local avec `computed()`
+4. comparer ce qui reste un flux et ce qui devient une valeur courante
 
-L objectif est de comprendre le pont entre deux modeles, pas de refaire toute l architecture.
-
-## Ce que vous devez comprendre a la fin
+## Ce que l equipe doit comprendre a la fin
 
 - pourquoi RxJS reste utile
 - pourquoi un signal peut simplifier la consommation d un flux dans un composant

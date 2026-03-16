@@ -2,51 +2,72 @@
 
 ## Contexte
 
-Si votre equipe vient d Angular 16, elle ecrit probablement encore ses templates avec
-`*ngIf`, `*ngFor` et parfois `*ngSwitch`.
+Si votre equipe vient d Angular 16, elle ecrit probablement encore ses templates avec:
 
-Cela fonctionne tres bien, mais Angular a introduit une nouvelle ecriture pour rendre les
-templates plus directs a lire: `@if`, `@for`, `@switch` et `@let`.
+- `*ngIf`
+- `*ngFor`
+- parfois `*ngSwitch`
 
-Dans cet exercice, nous restons sur un cas volontairement tres simple: une liste de films avec
-une recherche et un filtre.
+Angular propose maintenant une nouvelle ecriture:
+
+- `@if`
+- `@for`
+- `@switch`
+- `@let`
+
+Le sujet n est pas un simple changement de style.
+Le sujet est la lisibilite du template.
 
 ## Pourquoi Angular a introduit ce changement
 
-Le but n est pas seulement d avoir une syntaxe "plus moderne".
-Le vrai objectif est pedagogique et pratique:
+Le but est de rendre les templates:
 
-- rendre l intention du template plus visible
-- reduire l effet "directive speciale" de `*ngIf` et `*ngFor`
-- mieux structurer les templates un peu plus riches
-- eviter de repeter des expressions avec `@let`
+- plus directs a lire
+- moins verbeux
+- plus explicites sur l intention
 
-La documentation Angular insiste aussi sur l importance du `track` dans `@for`, car il aide
-Angular a faire le minimum de mises a jour DOM quand la collection change.
+Il y a aussi un point important a faire passer:
+avec `@for`, Angular met beaucoup plus en avant la notion de `track`, qui est essentielle pour eviter des mises a jour DOM inutiles.
 
 ## Ce qu on faisait avant
 
-Dans la sandbox, le template demarre avec une approche classique:
+Avant, un template simple pouvait ressembler a ceci:
 
-- `*ngIf` pour afficher ou non une section
-- `*ngFor` pour parcourir les films
-- plusieurs acces repetes a `filteredMovies.length`
-- `CommonModule` importe uniquement pour recuperer les directives structurelles
+```html
+<section *ngIf="filteredMovies.length > 0; else emptyState">
+  <article *ngFor="let movie of filteredMovies; trackBy: trackByMovieId">
+    {{ movie.title }}
+  </article>
+</section>
 
-Cette approche reste valide, mais elle devient plus verbeuse quand le template grossit.
+<ng-template #emptyState>
+  <p>Aucun film trouve.</p>
+</ng-template>
+```
+
+Cette ecriture fonctionne, mais elle devient vite plus lourde quand le template grossit.
 
 ## Ce qu on fait maintenant
 
-Dans le resultat attendu, le meme ecran est reecrit avec:
+Le meme cas peut s ecrire ainsi:
 
-- `@if` pour les branches conditionnelles
-- `@for` pour la liste
-- `track movie.id` directement dans la boucle
-- `@let` pour nommer des valeurs intermediaires comme la liste visible ou son compteur
+```html
+@let visibleMovies = filteredMovies();
 
-Un point important a observer:
-dans ce resultat, `CommonModule` n est plus necessaire pour le controle de flux.
-Le composant garde seulement `FormsModule` pour le formulaire.
+@if (visibleMovies.length > 0) {
+  @for (movie of visibleMovies; track movie.id) {
+    <article>{{ movie.title }}</article>
+  }
+} @else {
+  <p>Aucun film trouve.</p>
+}
+```
+
+Le template raconte mieux ce qu il fait:
+
+- `@let` donne un nom a la liste visible
+- `@if` gere le cas vide
+- `@for` parcourt la liste avec un `track` explicite
 
 ## Exemples de code utiles
 
@@ -84,52 +105,49 @@ Maintenant:
 }
 ```
 
-### Exemple combine avec `@let`
+### Exemple utile avec `@let`
+
+Avant:
 
 ```html
-@let visibleMovies = filteredMovies();
-
-@if (visibleMovies.length > 0) {
-  @for (movie of visibleMovies; track movie.id) {
-    <li>{{ movie.title }}</li>
-  }
-} @else {
-  <p>Aucun film trouve.</p>
-}
+<p>{{ filteredMovies.length }} resultat(s)</p>
+<button [disabled]="filteredMovies.length === 0">Exporter</button>
 ```
 
-Ce dernier exemple est celui qu il faut viser dans l exercice:
+Maintenant:
 
-- `@let` donne un nom clair a la liste visible
-- `@if` gere l etat vide
-- `@for` parcourt la liste avec un `track` explicite
+```html
+@let count = filteredMovies().length;
+
+<p>{{ count }} resultat(s)</p>
+<button [disabled]="count === 0">Exporter</button>
+```
 
 ## Architecture de l exercice
 
-- `Exercise2` affiche le contexte de l exercice et choisit la vue
-- `Exercise2Sandbox` montre le point de depart en syntaxe historique
-- `Exercise2Result` montre la correction en syntaxe moderne Angular
+- `Exercise2` : le parent de page
+- `Exercise2Sandbox` : le point de depart en syntaxe historique
+- `Exercise2Result` : la version moderne Angular
 
-Le switch du header permet de passer rapidement de la zone de travail a la correction.
+La page d exercice sert a comparer rapidement les deux syntaxes.
 
 ## Mission
 
-Votre objectif est de transformer le template de la sandbox sans changer le comportement
-fonctionnel de la page.
+Votre objectif est de transformer le template sans changer le comportement fonctionnel.
 
 Ce que vous devez faire:
 
 1. remplacer `*ngIf` par `@if`
 2. remplacer `*ngFor` par `@for`
 3. ajouter un `track` pertinent
-4. introduire `@let` pour eviter de repeter une expression du template
+4. introduire `@let` pour eviter une repetition
 5. supprimer `CommonModule` si vous n en avez plus besoin
 
 ## Ce que l equipe doit comprendre a la fin
 
 - la nouvelle syntaxe de controle de flux n est pas un gadget
-- `@for` rend le `track` plus visible
-- `@let` sert a clarifier le template, pas a faire "plus clever"
+- `@for` rend le `track` beaucoup plus visible
+- `@let` sert a clarifier le template, pas a faire des astuces
 - un template moderne Angular peut devenir plus lisible avec moins de bruit
 
 ## Criteres de validation

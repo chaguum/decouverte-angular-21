@@ -2,36 +2,42 @@
 
 ## Contexte
 
-Cet exercice introduit les Signal Forms d Angular.
-Le sujet est tres interessant pedagogiquement, mais il faut etre clair avec l equipe:
-la documentation Angular presente encore cette API comme **experimentale**.
+Signal Forms est un sujet tres interessant pedagogiquement, parce qu il montre la direction que prend Angular pour les formulaires.
 
-Cela signifie:
+Il faut cependant etre tres clair avec l equipe:
+la documentation officielle presente encore cette API comme experimentale.
 
-- la feature est tres interessante a decouvrir
-- elle montre clairement la direction prise par Angular
-- mais il faut rester prudent avant d en faire une regle absolue en production
+Cela veut dire:
 
-Source officielle:
-[Signal Forms essentials](https://angular.dev/essentials/signal-forms)
+- le sujet est tres interessant a comprendre
+- il montre la direction du framework
+- mais il ne faut pas encore le presenter comme une regle absolue pour tous les projets en production
 
-## Pourquoi Angular propose cette approche
+## Pourquoi Angular explore cette approche
 
-Angular veut rapprocher les formulaires du modele Signals deja introduit ailleurs dans le framework.
+Angular cherche a rapprocher les formulaires du modele Signals deja introduit ailleurs dans le framework.
 
 L idee generale est la suivante:
 
-- le formulaire est pilote par un modele de donnees
-- ce modele est relie a un arbre de champs
-- les champs, leurs erreurs et leur etat deviennent plus explicites
+- on part d un modele de donnees
+- ce modele est pilote par des signals
+- on construit ensuite le formulaire a partir de ce modele
 
 Pour une equipe qui vient de `ReactiveFormsModule`, le changement de vocabulaire est important.
-On ne raisonne plus d abord en `FormGroup` et `FormControl`, mais en **modele de formulaire** et en
-**FieldTree**.
+On raisonne moins en:
+
+- `FormGroup`
+- `FormControl`
+
+et davantage en:
+
+- modele
+- structure de formulaire
+- champs relies a ce modele
 
 ## Ce qu on faisait avant
 
-En Reactive Forms classique, on ecrivait souvent quelque chose comme ceci:
+Avant, on ecrivait souvent quelque chose comme ceci:
 
 ```ts
 readonly profileForm = new FormGroup({
@@ -48,14 +54,11 @@ Puis dans le template:
 <input [formControl]="profileForm.controls.email" />
 ```
 
-Cette approche reste valide et solide.
-Mais Angular explore ici une autre direction, plus proche des Signals.
+Cette approche reste solide et tout a fait valable.
 
 ## Ce qu on fait maintenant
 
-Avec Signal Forms, on part d abord d un modele.
-
-Exemple conceptuel:
+Avec Signal Forms, on part d abord d un modele signal:
 
 ```ts
 readonly profileModel = signal({
@@ -65,38 +68,18 @@ readonly profileModel = signal({
 });
 ```
 
-Puis on transforme ce modele en formulaire:
+Puis on construit le formulaire:
 
 ```ts
 readonly profileForm = form(this.profileModel);
 ```
 
-L idee a retenir:
+L idee a retenir est simple:
 
 - `profileModel` represente les donnees
-- `form(profileModel)` cree la structure reactive de champs
-
-## Exemple de champ
-
-Un champ peut ensuite etre branche au template avec l outillage dedie de Signal Forms.
-
-Exemple simplifie:
-
-```html
-<input [formField]="profileForm.name" />
-```
-
-Ce que cela signifie:
-
-- le champ est connecte au modele
-- sa valeur est synchronisee avec le state du formulaire
-- son etat et ses erreurs deviennent lisibles dans une logique plus uniforme
+- `form(profileModel)` cree la structure reactive des champs
 
 ## Exemple de validation
-
-Angular montre aussi un modele de validation plus proche de cette nouvelle structure.
-
-Exemple conceptuel:
 
 ```ts
 readonly profileForm = form(this.profileModel, (path) => {
@@ -105,30 +88,43 @@ readonly profileForm = form(this.profileModel, (path) => {
 });
 ```
 
-L idee pedagogique ici:
+Ici, la validation est rattachee au modele de formulaire.
 
-- la validation est attachee au modele de formulaire
-- les regles sont visibles au meme endroit
-- le template peut ensuite afficher les erreurs de facon ciblee
+## Exemple de champ dans le template
+
+```html
+<input [formField]="profileForm.name" />
+<input [formField]="profileForm.email" />
+```
+
+Le champ est alors relie directement au modele de formulaire.
+
+## Ce que le sujet change vraiment
+
+Le changement important n est pas juste syntaxique.
+Le changement important est le point de depart mental:
+
+- avant, on pensait "je construis un FormGroup"
+- maintenant, on pense "je pars d un modele pilote par signals"
 
 ## Architecture de l exercice
 
-- `Exercise6` sert de parent de page
-- `Exercise6Sandbox` montre un petit formulaire `Reactive Forms` classique
-- `Exercise6Result` montre le meme formulaire pilote par Signal Forms
+- `Exercise6` : le parent de page
+- `Exercise6Sandbox` : un petit formulaire `Reactive Forms` classique
+- `Exercise6Result` : le meme formulaire en Signal Forms
 
-Le scenario retenu dans le projet est un formulaire de profil tres court avec:
+Le scenario de l exercice reste volontairement simple:
 
 - nom
 - email
 - role
 - opt-in newsletter
 
-Il contient aussi:
+avec:
 
 - une validation simple
 - un bouton de pre-remplissage
-- un apercu live du modele courant
+- un apercu live du modele
 - une soumission avec recapitulatif
 
 ## Mission
@@ -142,8 +138,8 @@ Transformer un petit formulaire de profil en version Signal Forms:
 5. afficher les erreurs et la soumission
 6. conserver le bouton de pre-remplissage
 
-L exercice doit rester tres court.
-Le but n est pas de couvrir tous les formulaires Angular, mais de comprendre le principe.
+Le but n est pas de couvrir tous les formulaires Angular.
+Le but est de comprendre le principe.
 
 ## Ce que l equipe doit comprendre a la fin
 
@@ -151,7 +147,7 @@ Le but n est pas de couvrir tous les formulaires Angular, mais de comprendre le 
 - a quoi sert `form()`
 - comment relier un champ au template
 - pourquoi cette approche est prometteuse
-- pourquoi il faut tout de meme garder en tete le caractere experimental de l API
+- pourquoi il faut garder en tete le caractere experimental de l API
 
 ## Criteres de validation
 

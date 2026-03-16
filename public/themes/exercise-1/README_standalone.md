@@ -2,119 +2,157 @@
 
 ## Contexte
 
-Quand on vient d Angular 16, on a souvent le reflexe de penser d abord en `NgModule`.
-Pendant longtemps, c etait normal: les composants etaient declares dans un module, les imports
-etaient regroupes dans ce module, et le routing lazy chargeait souvent un module de feature.
+Quand on vient d Angular 16, on pense encore tres souvent en `NgModule`.
+Pendant longtemps, c etait la facon normale d organiser une feature:
 
-Depuis les versions recentes d Angular, l approche recommandee est differente:
-les composants sont concus comme des briques autonomes, directement chargeables et composables.
+- un module pour declarer les composants
+- un module pour regrouper les imports
+- un module pour brancher les routes
 
-## Pourquoi Angular a pousse ce changement ?
+Depuis les versions recentes d Angular, la direction recommandee est plus simple:
+on raisonne d abord en composants autonomes.
 
-L idee est simple: rendre le code plus lisible et plus local.
+## Pourquoi Angular pousse ce changement
 
-Avant, pour comprendre un composant, il fallait souvent ouvrir son module pour savoir:
-- s il etait declare
-- quels modules il utilisait
-- comment il etait expose
+Le but n est pas seulement de reduire le nombre de lignes.
+Le vrai but est de rendre le code plus local et plus lisible.
 
-Avec standalone, on lit beaucoup plus vite la page:
-- le composant declare ce dont il depend
-- la route charge directement le composant
-- on reduit le boilerplate structurel
+Avec une architecture standalone:
 
-Ce n est pas juste "moins de code". C est surtout une architecture plus explicite.
+- le composant declare lui-meme ce dont il depend
+- le routeur peut charger directement ce composant
+- on supprime des modules intermediaires purement structurels
+
+Quand on lit une page, on comprend donc plus vite:
+
+- de quoi elle depend
+- comment elle est composee
+- comment elle est chargee
 
 ## Ce qu on faisait avant
 
-En Angular 16, une feature simple pouvait ressembler a ceci:
+Avant, une feature simple pouvait ressembler a ceci:
 
 ```ts
 @NgModule({
-  declarations: [Exercise1Component, MemberProfileCard, MemberSkillList],
-  imports: [CommonModule, CardModule, TagModule, RouterModule.forChild(routes)]
+  declarations: [ProfileFormComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    RouterModule.forChild(routes)
+  ]
 })
 export class TeamFeatureModule {}
 ```
 
-Cette approche reste valide historiquement, mais elle ajoute une couche intermediaire meme
-quand la feature est tres petite.
+Cette approche fonctionne, mais elle ajoute une couche supplementaire meme quand la feature est petite.
 
 ## Ce qu on fait maintenant
 
-Avec standalone, le parent devient autonome:
+Avec standalone, le composant devient autonome:
 
 ```ts
 @Component({
   standalone: true,
-  imports: [MemberProfileCard, MemberSkillList, CardModule],
-  templateUrl: './exercise-1.html'
+  imports: [FormsModule, Button, InputText],
+  template: `
+    <input pInputText [(ngModel)]="fullName" />
+    <button pButton type="button" label="Enregistrer"></button>
+  `
 })
-export class Exercise1 {}
-```
-
-Et la route charge directement la page:
-
-```ts
-{
-  path: 'exercise-1',
-  loadComponent: () => import('./exercise-1').then((m) => m.Exercise1)
+export class ProfileFormComponent {
+  fullName = '';
 }
 ```
 
-Le gain pedagogique est important: les dependances sont visibles exactement la ou elles servent.
+Ce qui est interessant ici, c est que les composants PrimeNG importes sont visibles directement dans le composant:
 
-## Mise en place
+- `Button`
+- `InputText`
 
-Pour adopter standalone, retenez ces trois reflexes:
+On voit tout de suite ce que la page utilise.
 
-1. Chaque composant declare `standalone: true`.
-2. Chaque composant liste ses dependances dans `imports`.
-3. Le routing utilise `loadComponent` pour charger la page.
+## Routing moderne
 
-Autrement dit: on remplace une organisation "par module" par une organisation "par composant".
+### Cas simple avec `loadComponent`
+
+```ts
+{
+  path: 'profile',
+  loadComponent: () =>
+    import('./profile-form.component').then((m) => m.ProfileFormComponent)
+}
+```
+
+### Cas un peu plus structure avec `loadChildren`
+
+```ts
+export const adminRoutes: Routes = [
+  {
+    path: '',
+    children: [
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./users-page/users-page.component').then((m) => m.UsersPageComponent)
+      }
+    ]
+  }
+];
+
+{
+  path: 'admin',
+  loadChildren: () => import('./admin/admin.routes').then((m) => m.adminRoutes)
+}
+```
+
+Le point important a retenir:
+
+- `loadComponent` est parfait pour charger une page directement
+- `loadChildren` reste utile si on veut un petit arbre de routes enfant
 
 ## Architecture de l exercice
 
-L exercice est organise en trois composants clairement separes:
+L exercice est organise en trois composants:
 
-- `Exercise1` : le composant parent de la page
-- `Exercise1Sandbox` : la version de travail pour les developpeurs
-- `Exercise1Result` : la correction finale attendue
+- `Exercise1` : le parent de la page
+- `Exercise1Sandbox` : le point de depart
+- `Exercise1Result` : la correction finale
 
-Cette separation est volontaire.
-Elle permet de bien distinguer:
-- ce que l equipe doit modifier
-- ce que donne une implementation finale propre
+La sandbox part volontairement d une approche plus ancienne:
+
+- composant non standalone
+- `FormsModule` importe dans un module annexe
+
+La correction montre la cible:
+
+- composant standalone
+- imports locaux
+- composants PrimeNG standalone importes directement la ou ils servent
 
 ## Mission
 
-Votre mission est de partir du composant `Exercise1Sandbox`, qui contient un formulaire HTML natif,
-puis de comprendre ce que montre la correction `Exercise1Result`.
+L objectif est de comprendre ce que change standalone sur une page tres simple.
 
-Dans cette correction, la solution cible est:
-- un formulaire realise avec des composants standalone PrimeNG
-- des imports declares directement dans le composant
-- aucune dependance a un `NgModule`
+Vous devez observer puis reproduire une logique de ce type:
 
-Le point de depart de la sandbox est volontairement plus ancien:
-- le composant n est pas standalone
-- `FormsModule` est importe via un module annexe
+1. supprimer la dependance au module intermediaire
+2. remettre `FormsModule` au bon endroit
+3. importer localement les composants utilises
+4. garder le meme comportement fonctionnel
 
-L une des transformations attendues consiste donc a remettre `FormsModule` au bon endroit et a
-faire disparaitre cette dependance au module.
+Le sujet n est pas l UI.
+Le sujet est la localisation explicite des dependances.
 
-Le formulaire peut rester simple.
-Ce n est pas un exercice d UI.
-Le vrai sujet est l import local des composants standalone.
-
-## Ce que vous devez comprendre a la fin
+## Ce que l equipe doit comprendre a la fin
 
 - pourquoi Angular cherche a reduire la dependance aux `NgModule`
-- comment un parent standalone compose une page avec d autres composants standalone
-- comment une route charge un composant sans module de feature
-- pourquoi cette approche simplifie les petites features et le lazy loading
-- pourquoi `FormsModule` et les composants PrimeNG doivent etre importes directement la ou ils servent
+- comment un composant standalone declare ses imports
+- pourquoi cette approche est plus lisible sur de petites features
+- pourquoi c est tres parlant avec une bibliotheque UI comme PrimeNG
+- dans quels cas `loadComponent` et `loadChildren` ont chacun du sens
 
 ## Criteres de validation
 

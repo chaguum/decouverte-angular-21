@@ -3,63 +3,125 @@
 ## Contexte
 
 Cet exercice prolonge directement l exercice 3.
-Le state local du parent est deja gere avec les Signals, mais nous ajoutons maintenant un
-composant enfant de resume pour introduire la communication parent/enfant.
+Le parent utilise deja des Signals pour son state local.
+Nous ajoutons maintenant un composant enfant de resume.
 
-L idee est simple:
+Le but est de montrer que la communication parent / enfant peut elle aussi etre modernisee.
 
-- le parent reste la source de verite
-- l enfant affiche un resume du state
-- l enfant emet une intention utilisateur tres simple: afficher ou non uniquement les produits disponibles
+## Pourquoi Angular propose `input()` et `output()`
 
-## Pourquoi Angular a introduit ce changement
+Pendant longtemps, Angular a utilise:
 
-Pendant longtemps, les composants Angular ont communique avec `@Input()` et `@Output()`.
-Ces APIs restent valides, mais Angular propose aujourd hui des APIs plus directes:
+- `@Input()`
+- `@Output()`
+- `EventEmitter`
 
-- `input()` pour declarer une entree
-- `output()` pour declarer une sortie
+Ces APIs restent valides.
+Mais Angular propose aujourd hui une ecriture plus directe:
 
-L avantage est double:
+- `input()`
+- `output()`
+
+L interet est double:
 
 - la declaration est plus concise
-- la lecture est plus coherente avec les autres primitives modernes Angular
-
-Dans un projet Angular recent, cette ecriture devient la reference a connaitre.
+- elle s aligne beaucoup mieux avec le reste du modele Signals
 
 ## Ce qu on faisait avant
 
-Dans la sandbox, le parent est deja moderne:
+Avant, un composant enfant pouvait ressembler a ceci:
 
-- il utilise `signal()`, `computed()` et `effect()`
-- il filtre la liste de produits
-- il calcule le compteur et le titre de page
+```ts
+@Input() resultsCount = 0;
+@Input() pageTitle = '';
+@Output() availableOnlyChange = new EventEmitter<boolean>();
+```
 
-En revanche, le composant enfant de resume reste ecrit a l ancienne:
-
-- `@Input()` pour recevoir les donnees
-- `@Output()` et `EventEmitter` pour remonter le changement du switch
+Cette ecriture fonctionne, mais elle reste separee du reste des primitives modernes Angular.
 
 ## Ce qu on fait maintenant
 
-Dans le resultat attendu, le composant enfant utilise:
+```ts
+readonly resultsCount = input.required<number>();
+readonly pageTitle = input.required<string>();
+readonly availableOnly = input(false);
+readonly availableOnlyChange = output<boolean>();
+```
 
-- `input.required<number>()`
-- `input.required<string>()`
-- `input.required<boolean>()`
-- `output<boolean>()`
+Ce qui devient interessant, c est que `input()` se lit comme un signal.
 
-Le parent, lui, ne change presque pas.
-Il continue a posseder le state et a reagir a l evenement emis par l enfant.
+## Exemple de derivee dans l enfant
+
+```ts
+readonly summaryLabel = computed(() =>
+  `${this.pageTitle()} - ${this.resultsCount()} resultat(s)`
+);
+```
+
+Ici, l enfant ne possede pas le state global.
+Il se contente de deriver une information d affichage a partir de ce que le parent lui envoie.
+
+## Exemple d `effect()` dans l enfant
+
+```ts
+constructor() {
+  effect(() => {
+    console.log(`Le parent a envoye ${this.resultsCount()} resultat(s)`);
+  });
+}
+```
+
+Le point important est pedagogique:
+les `input()` s integrent naturellement au meme modele que les autres signals.
+
+## Exemple complet cote enfant
+
+```ts
+@Component({
+  selector: 'app-product-summary',
+  template: `
+    <p>{{ summaryLabel() }}</p>
+    <button type="button" (click)="toggleAvailableOnly()">
+      {{ buttonLabel() }}
+    </button>
+  `
+})
+export class ProductSummaryComponent {
+  readonly resultsCount = input.required<number>();
+  readonly pageTitle = input.required<string>();
+  readonly availableOnly = input(false);
+  readonly availableOnlyChange = output<boolean>();
+
+  readonly summaryLabel = computed(() =>
+    `${this.pageTitle()} - ${this.resultsCount()} resultat(s)`
+  );
+
+  readonly buttonLabel = computed(() =>
+    this.availableOnly() ? 'Afficher tout' : 'Afficher seulement les disponibles'
+  );
+
+  toggleAvailableOnly(): void {
+    this.availableOnlyChange.emit(!this.availableOnly());
+  }
+}
+```
+
+## Exemple cote parent
+
+```html
+<app-product-summary
+  [resultsCount]="resultsCount()"
+  [pageTitle]="pageTitle()"
+  [availableOnly]="availableOnly()"
+  (availableOnlyChange)="setAvailableOnly($event)"
+/>
+```
 
 ## Architecture de l exercice
 
-- `Exercise35` sert de parent de page
-- `Exercise35Sandbox` montre un parent en Signals avec un enfant legacy
-- `Exercise35Result` montre le meme parent avec un enfant moderne
-
-Le but pedagogique est volontairement cible:
-comprendre comment moderniser la communication composant parent/enfant sans toucher au coeur du state.
+- `Exercise35` : le parent de page
+- `Exercise35Sandbox` : un parent moderne avec un enfant legacy
+- `Exercise35Result` : un parent moderne avec un enfant ecrit en `input()` / `output()`
 
 ## Mission
 
@@ -69,14 +131,16 @@ Ce que vous devez faire:
 
 1. remplacer `@Input()` par `input()`
 2. remplacer `@Output()` et `EventEmitter` par `output()`
-3. conserver le meme contrat d utilisation cote parent
-4. verifier que le switch "uniquement disponibles" continue a filtrer la liste
+3. conserver le meme contrat cote parent
+4. observer qu on peut ajouter des derivees avec `computed()`
+5. verifier que le switch continue a filtrer correctement la liste
 
 ## Ce que l equipe doit comprendre a la fin
 
 - le parent reste proprietaire du state
 - l enfant recoit des donnees via `input()`
 - l enfant remonte une intention via `output()`
+- comme `input()` est lu comme un signal, l enfant peut deriver une vue locale avec `computed()`
 - `input()` et `output()` sont les APIs modernes a connaitre sur Angular recent
 
 ## Criteres de validation
