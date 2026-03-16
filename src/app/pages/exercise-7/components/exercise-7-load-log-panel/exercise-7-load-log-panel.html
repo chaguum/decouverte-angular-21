@@ -1,0 +1,34 @@
+<section class="log-panel">
+  <header class="log-header">
+    <h3>Journal de chargement</h3>
+    <p>
+      Ce panneau enregistre le moment ou les fichiers des composants enfants sont
+      reellement charges. Recharge completement la page pour rejouer la demonstration
+      depuis zero.
+    </p>
+  </header>
+
+  <div class="log-badges">
+    <p class="log-badge" [class.log-badge-active]="logSummary().eagerLoaded">
+      Module sandbox eager charge
+    </p>
+    <p class="log-badge" [class.log-badge-active]="logSummary().deferredLoaded">
+      Module defer charge apres interaction
+    </p>
+  </div>
+
+  @if (logEntries().length > 0) {
+    <ol class="log-list">
+      @for (entry of logEntries(); track entry.id) {
+        <li class="log-item" [class.log-item-eager]="entry.kind === 'eager'"
+          [class.log-item-deferred]="entry.kind === 'deferred'"
+          [class.log-item-instance]="entry.kind === 'instance'">
+          <p class="log-time">{{ entry.time }}</p>
+          <p class="log-message">{{ entry.message }}</p>
+        </li>
+      }
+    </ol>
+  } @else {
+    <p class="log-empty">Aucune entree pour le moment.</p>
+  }
+</section>

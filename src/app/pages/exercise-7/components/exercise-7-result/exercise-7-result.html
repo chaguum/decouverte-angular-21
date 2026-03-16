@@ -22,16 +22,18 @@
       </ol>
     </aside>
 
+    <app-exercise-7-load-log-panel />
+
     <section class="explain-panel explain-panel-result">
       <h3>Ce qui se passe vraiment</h3>
       <div class="explain-grid">
         <article>
           <p class="explain-step">1. Chargement initial</p>
-          <p>La page principale s affiche sans charger le composant detaille.</p>
+          <p>Au debut, le journal ne contient pas encore le module differe.</p>
         </article>
         <article>
           <p class="explain-step">2. Clic utilisateur</p>
-          <p>Angular telecharge le chunk du panneau detaille.</p>
+          <p>Au clic, une nouvelle entree apparait quand Angular charge le chunk.</p>
         </article>
         <article>
           <p class="explain-step">3. Impact</p>
@@ -64,7 +66,7 @@
         </dl>
 
         <p class="status-pill status-pill-result">
-          Etat du code detaille : pas encore charge tant que vous n interagissez pas
+          Preuve a observer : l entree "module defer charge" n apparait qu apres interaction
         </p>
       </article>
 
@@ -75,7 +77,7 @@
           <button type="button" class="cta-button">
             Charger puis afficher les statistiques detaillees
           </button>
-        } @loading (minimum 1200ms) {
+        } @loading (minimum 5000ms) {
           <div class="loading-box">
             <p class="loading-title">Angular charge maintenant le chunk differe.</p>
             <p>

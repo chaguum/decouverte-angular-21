@@ -23,16 +23,18 @@
       </ol>
     </aside>
 
+    <app-exercise-7-load-log-panel />
+
     <section class="explain-panel explain-panel-sandbox">
       <h3>Ce qui se passe vraiment</h3>
       <div class="explain-grid">
         <article>
           <p class="explain-step">1. Chargement initial</p>
-          <p>Le code du panneau detaille est deja charge avec la page.</p>
+          <p>Regardez le journal: le fichier du composant detaille est charge tout de suite.</p>
         </article>
         <article>
           <p class="explain-step">2. Clic utilisateur</p>
-          <p>Le bouton ne fait qu afficher un composant deja disponible.</p>
+          <p>Le clic ne fait qu instancier un composant dont le fichier etait deja la.</p>
         </article>
         <article>
           <p class="explain-step">3. Impact</p>
@@ -69,7 +71,7 @@
         </button>
 
         <p class="status-pill status-pill-sandbox">
-          Etat du code detaille : deja charge des l affichage initial
+          Preuve a observer : une entree "module eager charge" apparait avant tout clic
         </p>
       </article>
 

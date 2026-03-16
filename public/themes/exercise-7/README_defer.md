@@ -68,6 +68,19 @@ Phrase a retenir:
 - `@if` = "je montre plus tard un bloc deja charge"
 - `@defer` = "je charge plus tard le code de ce bloc"
 
+Dans la version actuelle de l exercice, cette difference est rendue visible par un
+**journal de chargement** dans l interface.
+
+Ce journal enregistre deux moments differents:
+
+- le chargement du fichier du composant enfant
+- l instanciation effective du composant dans le DOM
+
+Ainsi, on voit concretement que:
+
+- en sandbox, le fichier du composant detaille est charge avant le clic
+- en resultat, le fichier du composant detaille n est charge qu apres l interaction
+
 ## Ce que montre le resultat attendu
 
 Le resultat attendu fait passer le panneau detaille dans un bloc `@defer`.
@@ -87,6 +100,12 @@ Le composant detaille n est charge qu au moment de l interaction.
 
 Dans la correction de cet atelier, un petit delai artificiel est ajoute au composant
 differe pour que le bloc `@loading` soit vraiment visible pendant la demonstration.
+
+Le journal vous permet aussi d observer l ordre des evenements:
+
+1. chargement du module differe
+2. instanciation du composant
+3. remplacement du placeholder par le bloc final
 
 ## Les blocs importants a connaitre
 
@@ -201,11 +220,13 @@ le charger eagerment, et vous perdez l interet de `@defer`.
 ## Mission
 
 1. Reperez dans la sandbox le composant detaille charge directement.
-2. Remplacez la logique `bouton + @if` par un vrai bloc `@defer`.
-3. Ajoutez un `@placeholder` clair pour l utilisateur.
-4. Ajoutez un `@loading`.
-5. Gardez le contenu principal visible immediatement.
-6. Verifiez que le composant detaille reste reserve a la zone secondaire.
+2. Observez dans le journal qu une entree eager apparait avant tout clic.
+3. Remplacez la logique `bouton + @if` par un vrai bloc `@defer`.
+4. Ajoutez un `@placeholder` clair pour l utilisateur.
+5. Ajoutez un `@loading`.
+6. Verifiez qu une entree defer n apparait qu apres interaction.
+7. Gardez le contenu principal visible immediatement.
+8. Verifiez que le composant detaille reste reserve a la zone secondaire.
 
 ## Ce qu il faut retenir
 

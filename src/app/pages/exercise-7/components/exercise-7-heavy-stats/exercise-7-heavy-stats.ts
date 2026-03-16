@@ -1,10 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { recordExercise7Log } from '../../exercise-7-load-log';
 
 interface StatCard {
   label: string;
   value: string;
   detail: string;
 }
+
+recordExercise7Log(
+  'eager',
+  'Sandbox: le fichier du composant detaille a ete charge des l ouverture de la page.'
+);
 
 @Component({
   selector: 'app-exercise-7-heavy-stats',
@@ -13,6 +19,10 @@ interface StatCard {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Exercise7HeavyStats {
+  constructor() {
+    recordExercise7Log('instance', 'Sandbox: le composant detaille a ete instancie apres le clic.');
+  }
+
   protected readonly stats: readonly StatCard[] = [
     {
       label: 'Temps moyen de lecture',

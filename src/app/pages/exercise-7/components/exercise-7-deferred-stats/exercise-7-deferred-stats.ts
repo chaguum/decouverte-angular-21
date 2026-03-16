@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { recordExercise7Log } from '../../exercise-7-load-log';
 
 interface DeferredStatCard {
   label: string;
@@ -9,6 +10,11 @@ interface DeferredStatCard {
 // Artificial delay for the workshop so the @loading block is visible.
 await new Promise((resolve) => window.setTimeout(resolve, 1200));
 
+recordExercise7Log(
+  'deferred',
+  'Resultat: le fichier du composant detaille n a ete charge qu apres l interaction.'
+);
+
 @Component({
   selector: 'app-exercise-7-deferred-stats',
   templateUrl: './exercise-7-deferred-stats.html',
@@ -16,6 +22,13 @@ await new Promise((resolve) => window.setTimeout(resolve, 1200));
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Exercise7DeferredStats {
+  constructor() {
+    recordExercise7Log(
+      'instance',
+      'Resultat: le composant detaille a ete instancie juste apres le chargement du chunk.'
+    );
+  }
+
   protected readonly stats: readonly DeferredStatCard[] = [
     {
       label: 'Temps moyen de lecture',
