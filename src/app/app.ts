@@ -26,7 +26,7 @@ export class App {
   protected readonly topics = WORKSHOP_TOPICS;
   protected readonly currentExercisePath = computed(() => {
     const path = this.currentUrl().split('?')[0] ?? '';
-    return /^\/exercise-\d+$/.test(path) ? path : null;
+    return /^\/exercise-\d+(?:-\d+)?$/.test(path) ? path : null;
   });
   protected readonly isExerciseRoute = computed(() => this.currentExercisePath() !== null);
   protected readonly exerciseViewMode = computed<'sandbox' | 'result'>(() => {

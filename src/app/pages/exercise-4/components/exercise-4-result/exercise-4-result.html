@@ -1,0 +1,70 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Resultat attendu</p>
+    <h2>Observable source, Signal de consommation</h2>
+    <p>
+      Le service continue d exposer un `Observable`. Le composant, lui, le consomme avec
+      `toSignal()` puis derive l affichage avec `computed()`.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>Interop utilisee</h3>
+      <p>
+        `toSignal(products$)` cree une valeur reactive courante dans le composant, sans changer la
+        nature RxJS de la source.
+      </p>
+    </div>
+
+    <div class="filters">
+      <label>
+        Recherche
+        <input
+          type="text"
+          name="product-search"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          placeholder="Nom ou categorie"
+        />
+      </label>
+    </div>
+
+    <section class="summary">
+      <p><strong>{{ resultsCount() }}</strong> suggestion(s) visibles.</p>
+      <p><strong>Titre de page :</strong> {{ pageTitle() }}</p>
+      <p><strong>Source :</strong> le service reste un flux RxJS, mais le composant lit un signal.</p>
+    </section>
+
+    <section class="product-panel">
+      <h3>Catalogue</h3>
+
+      @if (isLoading()) {
+        <div class="empty-state">
+          Chargement des suggestions RxJS...
+        </div>
+      } @else if (resultsCount() > 0) {
+        <ul class="product-list">
+          @for (product of filteredProducts(); track product.id) {
+            <li class="product-card">
+              <div class="product-card-head">
+                <div>
+                  <p class="product-title">{{ product.name }}</p>
+                  <p class="product-meta">{{ product.category }} · {{ product.price }} €</p>
+                </div>
+
+                <span class="product-status" [class.product-status-off]="!product.available">
+                  {{ product.available ? 'Disponible' : 'Rupture' }}
+                </span>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty-state">
+          Aucun produit ne correspond aux filtres actuels.
+        </div>
+      }
+    </section>
+  </div>
+</section>

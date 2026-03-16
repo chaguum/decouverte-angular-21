@@ -1,0 +1,9 @@
+<section class="summary">
+  <p><strong>{{ resultsCount }}</strong> resultat(s) visibles.</p>
+  <p><strong>Titre de page :</strong> {{ pageTitle }}</p>
+
+  <label class="availability-toggle">
+    <input type="checkbox" [checked]="availableOnly" (change)="onToggle($event)" />
+    <span>Afficher uniquement les produits disponibles</span>
+  </label>
+</section>

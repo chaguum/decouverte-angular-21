@@ -1,0 +1,77 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Sandbox</p>
+    <h2>Zone de travail</h2>
+    <p>
+      Le service expose deja un flux RxJS. Le composant le consomme encore en mode RxJS pur, avec
+      `combineLatest`, `BehaviorSubject` et `async`.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>Consigne</h3>
+      <p>
+        Le comportement visuel est deja correct. Le travail consiste a consommer ce flux de facon
+        plus naturelle dans un composant Angular moderne.
+      </p>
+      <ol>
+        @for (step of steps; track step) {
+          <li>{{ step }}</li>
+        }
+      </ol>
+    </div>
+
+    <div class="filters">
+      <label>
+        Recherche
+        <input
+          type="text"
+          name="product-search"
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Nom ou categorie"
+        />
+      </label>
+    </div>
+
+    <section class="summary">
+      <p><strong>{{ (resultsCount$ | async) ?? 0 }}</strong> suggestion(s) visibles.</p>
+      <p><strong>Titre de page :</strong> {{ (pageTitle$ | async) ?? 'Suggestions produits' }}</p>
+      <p><strong>Source :</strong> le service reste un flux RxJS.</p>
+    </section>
+
+    <section class="product-panel">
+      <h3>Catalogue</h3>
+
+      @if (filteredProducts$ | async; as filteredProducts) {
+        @if (filteredProducts.length > 0) {
+          <ul class="product-list">
+            @for (product of filteredProducts; track product.id) {
+              <li class="product-card">
+                <div class="product-card-head">
+                  <div>
+                    <p class="product-title">{{ product.name }}</p>
+                    <p class="product-meta">{{ product.category }} · {{ product.price }} €</p>
+                  </div>
+
+                  <span class="product-status" [class.product-status-off]="!product.available">
+                    {{ product.available ? 'Disponible' : 'Rupture' }}
+                  </span>
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <div class="empty-state">
+            Aucun produit ne correspond aux filtres actuels.
+          </div>
+        }
+      } @else {
+        <div class="empty-state">
+          Chargement des suggestions RxJS...
+        </div>
+      }
+    </section>
+  </div>
+</section>

@@ -1,0 +1,83 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Sandbox</p>
+    <h2>Zone de travail</h2>
+    <p>
+      Point de depart classique: le state local repose sur des proprietes et des getters, avec des
+      mises a jour manuelles du titre de page.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>Consigne</h3>
+      <p>
+        Le comportement visuel est deja en place. Le travail consiste a rendre le state plus
+        explicite et reactif avec les primitives Signals d Angular.
+      </p>
+      <ol>
+        @for (step of steps; track step) {
+          <li>{{ step }}</li>
+        }
+      </ol>
+    </div>
+
+    <div class="filters">
+      <label>
+        Recherche
+        <input
+          type="text"
+          name="product-search"
+          [ngModel]="searchTerm"
+          (ngModelChange)="onSearchChange($event)"
+          placeholder="Nom ou categorie"
+        />
+      </label>
+
+      <label>
+        Categorie
+        <select
+          name="product-category"
+          [ngModel]="selectedCategory"
+          (ngModelChange)="onCategoryChange($event)"
+        >
+          @for (option of categoryOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <section class="summary">
+      <p><strong>{{ resultsCount }}</strong> resultat(s) visibles.</p>
+      <p><strong>Titre de page :</strong> {{ pageTitle }}</p>
+    </section>
+
+    <section class="product-panel">
+      <h3>Catalogue</h3>
+
+      @if (resultsCount > 0) {
+        <ul class="product-list">
+          @for (product of filteredProducts; track product.id) {
+            <li class="product-card">
+              <div class="product-card-head">
+                <div>
+                  <p class="product-title">{{ product.name }}</p>
+                  <p class="product-meta">{{ product.category }} · {{ product.price }} €</p>
+                </div>
+
+                <span class="product-status" [class.product-status-off]="!product.available">
+                  {{ product.available ? 'Disponible' : 'Rupture' }}
+                </span>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty-state">
+          Aucun produit ne correspond aux filtres actuels.
+        </div>
+      }
+    </section>
+  </div>
+</section>

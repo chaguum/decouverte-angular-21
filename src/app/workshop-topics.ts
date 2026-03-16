@@ -2,6 +2,7 @@ export type WorkshopTopicId =
   | 'standalone'
   | 'template-flow-let'
   | 'signals'
+  | 'signals-input-output'
   | 'rxjs-signals-interop'
   | 'linked-signal-state'
   | 'ngrx-signal-store'
@@ -40,6 +41,14 @@ export const WORKSHOP_TOPICS: readonly WorkshopTopic[] = [
     path: '/exercise-3',
     summary: 'Signals, computed, effect, input, output et model pour le state moderne Angular.',
     readmePath: '/themes/exercise-3/README_signals.md'
+  },
+  {
+    order: 3.5,
+    id: 'signals-input-output',
+    label: 'Signals et input/output',
+    path: '/exercise-3-5',
+    summary: 'Faire circuler un state Signals entre parent et enfant, puis moderniser la communication avec input() et output().',
+    readmePath: '/themes/exercise-3-5/README_signals-input-output.md'
   },
   {
     order: 4,

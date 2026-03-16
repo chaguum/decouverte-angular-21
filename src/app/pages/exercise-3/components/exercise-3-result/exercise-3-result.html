@@ -1,0 +1,75 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Resultat attendu</p>
+    <h2>Signals, computed et effect</h2>
+    <p>
+      Le state local devient explicite: les sources sont en signals, les derivees en computed, et
+      le titre de page est synchronise par un effect.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <div class="workbench-brief">
+      <h3>Primitives utilisees</h3>
+      <p>`signal()` pour les sources, `computed()` pour les derivees, `effect()` pour document.title.</p>
+    </div>
+
+    <div class="filters">
+      <label>
+        Recherche
+        <input
+          type="text"
+          name="product-search"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          placeholder="Nom ou categorie"
+        />
+      </label>
+
+      <label>
+        Categorie
+        <select
+          name="product-category"
+          [ngModel]="selectedCategory()"
+          (ngModelChange)="selectedCategory.set($event)"
+        >
+          @for (option of categoryOptions; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <section class="summary">
+      <p><strong>{{ resultsCount() }}</strong> resultat(s) visibles.</p>
+      <p><strong>Titre de page :</strong> {{ pageTitle() }}</p>
+    </section>
+
+    <section class="product-panel">
+      <h3>Catalogue</h3>
+
+      @if (resultsCount() > 0) {
+        <ul class="product-list">
+          @for (product of filteredProducts(); track product.id) {
+            <li class="product-card">
+              <div class="product-card-head">
+                <div>
+                  <p class="product-title">{{ product.name }}</p>
+                  <p class="product-meta">{{ product.category }} · {{ product.price }} €</p>
+                </div>
+
+                <span class="product-status" [class.product-status-off]="!product.available">
+                  {{ product.available ? 'Disponible' : 'Rupture' }}
+                </span>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="empty-state">
+          Aucun produit ne correspond aux filtres actuels.
+        </div>
+      }
+    </section>
+  </div>
+</section>

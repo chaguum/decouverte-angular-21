@@ -24,6 +24,12 @@ export const routes: Routes = [
     title: 'Exercice 3 : Signals | ATOS Angular 21 Workshop'
   },
   {
+    path: 'exercise-3-5',
+    loadComponent: () =>
+      import('./pages/exercise-3-5/exercise-3-5').then((module) => module.Exercise35),
+    title: 'Exercice 3.5 : Signals et input/output | ATOS Angular 21 Workshop'
+  },
+  {
     path: 'exercise-4',
     loadComponent: () =>
       import('./pages/exercise-4/exercise-4').then((module) => module.Exercise4),

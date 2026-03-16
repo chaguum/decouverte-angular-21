@@ -2,88 +2,94 @@
 
 ## Contexte
 
-Les signals sont l un des changements les plus importants pour une equipe qui vient d Angular 16.
-Ils introduisent une nouvelle facon de gerer l etat local et les derivees d etat.
+Les Signals sont l une des evolutions les plus importantes pour une equipe qui vient d Angular 16.
+Ils changent surtout la maniere de gerer le state local dans un composant.
 
-L enjeu pedagogique ici est important:
-il ne s agit pas de "remplacer RxJS partout".
-Il s agit de comprendre comment Angular propose aujourd hui un modele reactif plus simple pour
-les cas locaux et les interactions de composant.
+Dans cet exercice, nous prenons un cas volontairement tres simple:
+un mini catalogue de produits avec une recherche, un filtre par categorie et un compteur de resultats.
 
-## Pourquoi ce changement ?
+L interet pedagogique est le suivant:
+comparer une implementation "classique" basee sur des proprietes et des getters, avec une
+implementation basee sur `signal()`, `computed()` et `effect()`.
 
-Historiquement, beaucoup de devs Angular ont pris l habitude de tout penser en Observables,
-meme pour un etat purement local comme:
-- un compteur
-- un texte de filtre
-- une liste filtree
+## Pourquoi Angular a introduit ce changement
 
-Les signals simplifient ces cas:
-- `signal()` pour la valeur source
-- `computed()` pour une valeur derivee
-- `effect()` pour un effet de bord
+Pendant longtemps, le state local Angular a souvent ete gere de facon imperative:
 
-Angular a aussi modernise l API des composants avec `input()`, `output()` et `model()`,
-pour mieux s integrer a cette approche.
+- une propriete pour stocker une valeur
+- un getter ou une methode pour recalculer une derivee
+- des appels manuels quand il fallait synchroniser un effet externe
+
+Cela fonctionne, mais la logique reactive est alors dispersee dans le composant.
+
+Avec les Signals, Angular propose une separation plus nette:
+
+- `signal()` pour les valeurs sources
+- `computed()` pour les valeurs derivees
+- `effect()` pour les effets de bord
+
+Autrement dit:
+on distingue clairement ce qui constitue l etat, ce qui se calcule a partir de cet etat,
+et ce qui doit produire une action externe.
 
 ## Ce qu on faisait avant
 
-On voyait souvent du state local gere avec:
-- des proprietes classiques
-- du `Subject` ou `BehaviorSubject`
-- beaucoup de logique imperative autour du template
+Dans la sandbox, vous partez d un composant tout a fait courant:
 
-Cette approche fonctionne, mais elle est parfois trop lourde pour des besoins simples.
+- `searchTerm` et `selectedCategory` sont de simples proprietes
+- la liste filtree repose sur un getter
+- le compteur repose sur un autre getter
+- le titre de page est mis a jour manuellement dans plusieurs endroits
+
+Le composant fonctionne, mais il faut penser soi-meme a garder les choses synchronisees.
 
 ## Ce qu on fait maintenant
 
-On distingue plus clairement:
+Dans le resultat attendu:
 
-- la source: `signal()`
-- le calcul: `computed()`
-- la reaction: `effect()`
+- `searchTerm` devient un `signal()`
+- `selectedCategory` devient un `signal()`
+- `filteredProducts` devient un `computed()`
+- `resultsCount` devient un `computed()`
+- `pageTitle` devient un `computed()`
+- un `effect()` synchronise automatiquement `document.title`
 
-Et pour les composants:
-- `input()` modernise l entree
-- `output()` modernise la sortie
-- `model()` simplifie certains cas de liaison bidirectionnelle
+Le comportement reste identique, mais l organisation du code est plus explicite.
 
-## Mise en place
+## Architecture de l exercice
 
-Retenez cette regle tres importante:
+- `Exercise3` joue le role de parent
+- `Exercise3Sandbox` montre une gestion classique du state local
+- `Exercise3Result` montre la meme interface avec une implementation Signals
 
-1. Un signal represente une valeur reactive.
-2. Un computed derive une valeur sans effet de bord.
-3. Un effect sert seulement quand il faut reagir au monde exterieur.
-
-Le vrai gain, c est de mieux separer "ce qui se calcule" de "ce qui provoque une action".
+Le switch du header permet de comparer rapidement la zone de travail et la correction.
 
 ## Mission
 
-Construire un mini filtre interactif:
-- une valeur de recherche stockee dans un signal
-- une liste filtree via `computed()`
-- un affichage simple des resultats
+Votre objectif est de transformer la sandbox sans changer le comportement utilisateur.
 
-Bonus si besoin:
-- un composant enfant avec `input()`
-- une action utilisateur exposee par `output()`
+Ce que vous devez faire:
 
-## Ce que vous devez comprendre a la fin
+1. convertir l etat local en `signal()`
+2. remplacer les getters de derivees par des `computed()`
+3. creer un `computed()` pour le titre de page
+4. utiliser un `effect()` pour synchroniser ce titre avec le navigateur
 
-- quand un signal est plus simple qu un `BehaviorSubject`
-- pourquoi `computed()` est preferable a un recalcul manuel
-- pourquoi `effect()` doit rester reserve aux effets de bord
+## Ce que l equipe doit comprendre a la fin
+
+- `signal()` sert a modeliser une source de verite locale
+- `computed()` doit contenir les derivees pures
+- `effect()` ne sert pas a recalculer du state metier
+- le vrai gain des Signals est la clarte de la dependance reactive
 
 ## Criteres de validation
 
-- au moins un `signal()` est utilise pour l etat local
-- au moins un `computed()` est utilise pour une valeur derivee
-- l exercice ne s appuie pas sur RxJS pour un besoin purement local
+- au moins deux valeurs sources sont gerees avec `signal()`
+- la liste filtree est derivee avec `computed()`
+- le compteur est derive avec `computed()`
+- le titre de page est synchronise par un `effect()`
+- le comportement visuel de la page reste identique
 
 ## Ressources officielles
 
 - Signals: [https://angular.dev/guide/signals](https://angular.dev/guide/signals)
-- Inputs guide: [https://angular.dev/guide/components/inputs](https://angular.dev/guide/components/inputs)
-- Outputs guide: [https://angular.dev/guide/components/outputs](https://angular.dev/guide/components/outputs)
-- API `model()`: [https://angular.dev/api/core/model](https://angular.dev/api/core/model)
