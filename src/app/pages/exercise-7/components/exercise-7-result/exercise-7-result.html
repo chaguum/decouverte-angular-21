@@ -22,6 +22,24 @@
       </ol>
     </aside>
 
+    <section class="explain-panel explain-panel-result">
+      <h3>Ce qui se passe vraiment</h3>
+      <div class="explain-grid">
+        <article>
+          <p class="explain-step">1. Chargement initial</p>
+          <p>La page principale s affiche sans charger le composant detaille.</p>
+        </article>
+        <article>
+          <p class="explain-step">2. Clic utilisateur</p>
+          <p>Angular telecharge le chunk du panneau detaille.</p>
+        </article>
+        <article>
+          <p class="explain-step">3. Impact</p>
+          <p>Le code secondaire est charge plus tard, pas au premier rendu.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="product-shell">
       <article class="product-card">
         <p class="product-tag">Produit principal</p>
@@ -44,17 +62,27 @@
             <dd>Disponible</dd>
           </div>
         </dl>
+
+        <p class="status-pill status-pill-result">
+          Etat du code detaille : pas encore charge tant que vous n interagissez pas
+        </p>
       </article>
 
       <div aria-live="polite" aria-atomic="true">
         @defer (on interaction) {
-          <app-exercise-7-heavy-stats />
+          <app-exercise-7-deferred-stats />
         } @placeholder {
           <button type="button" class="cta-button">
-            Afficher les statistiques detaillees
+            Charger puis afficher les statistiques detaillees
           </button>
-        } @loading (after 100ms; minimum 700ms) {
-          <p class="loading-box">Chargement du panneau detaille...</p>
+        } @loading (minimum 1200ms) {
+          <div class="loading-box">
+            <p class="loading-title">Angular charge maintenant le chunk differe.</p>
+            <p>
+              Ici, on ne revele pas juste un bloc cache: on attend reellement le
+              telechargement du composant secondaire.
+            </p>
+          </div>
         } @error {
           <p class="error-box">Le bloc detaille n a pas pu etre charge.</p>
         }

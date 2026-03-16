@@ -63,6 +63,11 @@ Autrement dit:
 `@if` controle le rendu.
 `@defer` controle le moment du chargement.
 
+Phrase a retenir:
+
+- `@if` = "je montre plus tard un bloc deja charge"
+- `@defer` = "je charge plus tard le code de ce bloc"
+
 ## Ce que montre le resultat attendu
 
 Le resultat attendu fait passer le panneau detaille dans un bloc `@defer`.
@@ -79,6 +84,9 @@ Exemple simplifie:
 
 Ici, le bouton du placeholder sert de declencheur.
 Le composant detaille n est charge qu au moment de l interaction.
+
+Dans la correction de cet atelier, un petit delai artificiel est ajoute au composant
+differe pour que le bloc `@loading` soit vraiment visible pendant la demonstration.
 
 ## Les blocs importants a connaitre
 

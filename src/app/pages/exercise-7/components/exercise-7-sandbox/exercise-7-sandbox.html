@@ -23,6 +23,24 @@
       </ol>
     </aside>
 
+    <section class="explain-panel explain-panel-sandbox">
+      <h3>Ce qui se passe vraiment</h3>
+      <div class="explain-grid">
+        <article>
+          <p class="explain-step">1. Chargement initial</p>
+          <p>Le code du panneau detaille est deja charge avec la page.</p>
+        </article>
+        <article>
+          <p class="explain-step">2. Clic utilisateur</p>
+          <p>Le bouton ne fait qu afficher un composant deja disponible.</p>
+        </article>
+        <article>
+          <p class="explain-step">3. Impact</p>
+          <p>Rendu differe, mais pas chargement differe du code.</p>
+        </article>
+      </div>
+    </section>
+
     <section class="product-shell">
       <article class="product-card">
         <p class="product-tag">Produit principal</p>
@@ -49,6 +67,10 @@
         <button type="button" class="cta-button" (click)="toggleDetails()">
           {{ showDetails() ? 'Masquer les statistiques' : 'Afficher les statistiques detaillees' }}
         </button>
+
+        <p class="status-pill status-pill-sandbox">
+          Etat du code detaille : deja charge des l affichage initial
+        </p>
       </article>
 
       @if (showDetails()) {
