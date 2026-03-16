@@ -48,6 +48,62 @@ Un point important a observer:
 dans ce resultat, `CommonModule` n est plus necessaire pour le controle de flux.
 Le composant garde seulement `FormsModule` pour le formulaire.
 
+## Exemples de code utiles
+
+### Exemple simple avec `@if`
+
+Avant:
+
+```html
+<p *ngIf="movies.length === 0">Aucun film trouve.</p>
+```
+
+Maintenant:
+
+```html
+@if (movies.length === 0) {
+  <p>Aucun film trouve.</p>
+}
+```
+
+### Exemple simple avec `@for`
+
+Avant:
+
+```html
+<li *ngFor="let movie of movies; trackBy: trackByMovieId">
+  {{ movie.title }}
+</li>
+```
+
+Maintenant:
+
+```html
+@for (movie of movies; track movie.id) {
+  <li>{{ movie.title }}</li>
+}
+```
+
+### Exemple combine avec `@let`
+
+```html
+@let visibleMovies = filteredMovies();
+
+@if (visibleMovies.length > 0) {
+  @for (movie of visibleMovies; track movie.id) {
+    <li>{{ movie.title }}</li>
+  }
+} @else {
+  <p>Aucun film trouve.</p>
+}
+```
+
+Ce dernier exemple est celui qu il faut viser dans l exercice:
+
+- `@let` donne un nom clair a la liste visible
+- `@if` gere l etat vide
+- `@for` parcourt la liste avec un `track` explicite
+
 ## Architecture de l exercice
 
 - `Exercise2` affiche le contexte de l exercice et choisit la vue

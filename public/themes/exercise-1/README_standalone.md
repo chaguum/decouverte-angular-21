@@ -119,7 +119,6 @@ Le vrai sujet est l import local des composants standalone.
 ## Criteres de validation
 
 - aucun `NgModule` n est cree pour cette feature
-- la page est chargee via `loadComponent`
 - le parent importe `Exercise1Sandbox` et `Exercise1Result`
 - la version de depart utilise encore un module pour porter `FormsModule`
 - `Exercise1Result` importe uniquement les composants standalone PrimeNG necessaires
