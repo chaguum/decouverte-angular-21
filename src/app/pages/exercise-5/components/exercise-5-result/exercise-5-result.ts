@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { ProductFilter } from '../../exercise-5.models';
-import { Exercise5ProductsStore } from '../../exercise-5-products.store';
+import { Exercise5ResultStore } from './store';
 
 @Component({
   selector: 'app-exercise-5-result',
@@ -16,7 +16,7 @@ export class Exercise5Result {
     { label: 'Disponibles', value: 'available' }
   ] as const satisfies ReadonlyArray<{ label: string; value: ProductFilter }>;
 
-  protected readonly store = inject(Exercise5ProductsStore);
+  protected readonly store = inject(Exercise5ResultStore);
 
   protected setFilter(filter: ProductFilter): void {
     this.store.setFilter(filter);

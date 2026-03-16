@@ -255,21 +255,28 @@ Dans le resultat attendu, le store vit au niveau applicatif.
 ## Architecture de l exercice
 
 - `Exercise5Sandbox`
-  montre une approche locale, simple, mais limitee
+  est encore branche sur un service local
+- `src/app/pages/exercise-5/components/exercise-5-sandbox/exercise-5-products.service.ts`
+  montre le point de depart a migrer
+- `src/app/pages/exercise-5/exercise-5-products.store.ts`
+  est le fichier store que les developpeurs doivent completer
 - `Exercise5Result`
-  montre un vrai Signal Store NgRx
-- `exercise-5-products.store.ts`
-  contient la correction centrale
+  montre la correction finale
+- `src/app/pages/exercise-5/components/exercise-5-result/store.ts`
+  contient la version complete du store
 
 ## Mission
 
-1. Identifier l etat initial a mettre dans `withState`.
-2. Utiliser `withEntities()` pour porter la collection de produits.
-3. Deplacer les derivees dans `withComputed`.
-4. Deplacer les actions metier dans `withMethods`.
-5. Utiliser `withHooks` pour lancer le chargement initial.
-6. Garder un statut explicite avec `withStatus()`.
-7. Eviter un rechargement si les produits existent deja dans le store.
+1. Observer le service de depart dans `components/exercise-5-sandbox/exercise-5-products.service.ts`.
+2. Ouvrir `src/app/pages/exercise-5/exercise-5-products.store.ts`.
+3. Ajouter `withEntities()` pour porter la collection de produits.
+4. Completer les derivees dans `withComputed`.
+5. Completer `loadProducts()`, `reloadProducts()` et `simulateErrorReload()`.
+6. Garder `toggleFavorite()` et `setFilter()` dans `withMethods`.
+7. Utiliser `withHooks` pour lancer le chargement initial.
+8. Garder un statut explicite avec `withStatus()`.
+9. Rebrancher ensuite le composant sandbox sur le store au lieu du service.
+10. Eviter un rechargement si les produits existent deja dans le store.
 
 ## Ce qu il faut retenir
 

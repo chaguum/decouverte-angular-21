@@ -59,6 +59,15 @@
   gap: 0.4rem;
 }
 
+.solution-path {
+  margin: 0 0 1rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px dashed #c4b5fd;
+  background: #fcfaff;
+  color: #5b21b6;
+  font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
 .toolbar {
   display: flex;
   flex-wrap: wrap;

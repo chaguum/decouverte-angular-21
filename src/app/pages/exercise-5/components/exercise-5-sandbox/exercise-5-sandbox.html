@@ -1,10 +1,10 @@
 <section class="workbench">
   <header class="workbench-header">
     <p class="eyebrow">Sandbox</p>
-    <h2>Etat local dans le composant</h2>
+    <h2>Service legacy a migrer vers un store</h2>
     <p>
-      Ici, tout vit dans le composant. Si vous quittez la page puis revenez, on recharge
-      les donnees et on repart d un etat vide.
+      Cette vue est encore branchee sur un service local au composant. Le but est de
+      migrer cette logique vers un NgRx Signal Store puis de rebrancher le composant.
     </p>
   </header>
 
@@ -12,27 +12,39 @@
     <aside class="workbench-brief">
       <h3>Consigne</h3>
       <p>
-        Cette version montre un point de depart classique. La logique de chargement, les
-        favoris, les derivees et le statut sont tous portes par le composant.
+        Point de depart :
+        <strong>`src/app/pages/exercise-5/components/exercise-5-sandbox/exercise-5-products.service.ts`</strong>.
+        Objectif :
+        <strong>`src/app/pages/exercise-5/exercise-5-products.store.ts`</strong>.
       </p>
       <ol>
-        <li>Chargez les produits et observez le compteur de requetes.</li>
-        <li>Ajoutez quelques favoris, puis changez le filtre.</li>
-        <li>Imaginez maintenant le meme besoin partage sur plusieurs pages.</li>
+        <li>Reperez l etat, les derivees et les methodes dans le service.</li>
+        <li>Recreez cette logique dans le starter store avec `withEntities()`.</li>
+        <li>Ajoutez la garde anti rechargement dans `loadProducts()`.</li>
+        <li>Branchez ensuite ce composant sur le store a la place du service.</li>
+        <li>Comparez enfin votre resultat avec la correction finale.</li>
       </ol>
     </aside>
 
+    <p class="starter-path">
+      Point de depart : `src/app/pages/exercise-5/components/exercise-5-sandbox/exercise-5-products.service.ts`
+    </p>
+    <p class="starter-path">
+      Fichier a coder : `src/app/pages/exercise-5/exercise-5-products.store.ts`
+    </p>
+
     <section class="toolbar">
       <div class="toolbar-actions">
-        <button type="button" (click)="loadProducts()">Recharger</button>
-        <button type="button" (click)="loadProducts(true)">Simuler une erreur</button>
+        <button type="button" (click)="service.reloadProducts()">Recharger</button>
+        <button type="button" (click)="service.simulateErrorReload()">Simuler une erreur</button>
+        <button type="button" (click)="service.clearStore()">Vider</button>
       </div>
 
       <div class="filter-group" aria-label="Filtre des produits">
         @for (filterOption of filters; track filterOption.value) {
           <button
             type="button"
-            [class.active]="filter === filterOption.value"
+            [class.active]="service.filter() === filterOption.value"
             (click)="setFilter(filterOption.value)"
           >
             {{ filterOption.label }}
@@ -42,31 +54,32 @@
     </section>
 
     <section class="summary">
-      <p><strong>Statut :</strong> {{ status }}</p>
-      <p><strong>Requetes lancees :</strong> {{ requestCount }}</p>
-      <p><strong>Dernier chargement :</strong> {{ lastLoadedAt ?? 'Aucun' }}</p>
-      <p><strong>Favoris :</strong> {{ favoriteCount }}</p>
-      <p><strong>Favoris disponibles :</strong> {{ availableFavoritesCount }}</p>
+      <p><strong>Produits en memoire :</strong> {{ service.totalProducts() }}</p>
+      <p><strong>Statut :</strong> {{ service.status() }}</p>
+      <p><strong>Requetes lancees :</strong> {{ service.requestCount() }}</p>
+      <p><strong>Dernier chargement :</strong> {{ service.lastLoadedAt() ?? 'Aucun' }}</p>
+      <p><strong>Favoris :</strong> {{ service.favoriteCount() }}</p>
+      <p><strong>Favoris disponibles :</strong> {{ service.availableFavoritesCount() }}</p>
     </section>
 
-    @if (errorMessage) {
+    @if (service.errorMessage()) {
       <p class="status-box status-error" role="alert">
-        {{ errorMessage }}
+        {{ service.errorMessage() }}
       </p>
     }
 
     <section class="catalog-panel">
-      <h3>Catalogue local</h3>
+      <h3>Catalogue pilote par le service</h3>
 
-      @if (visibleProducts.length > 0) {
+      @if (service.visibleProducts().length > 0) {
         <ul class="product-list">
-          @for (product of visibleProducts; track product.id) {
+          @for (product of service.visibleProducts(); track product.id) {
             <li class="product-card">
               <div class="product-card-head">
                 <div>
                   <p class="product-title">{{ product.name }}</p>
                   <p class="product-meta">
-                    {{ product.category }} · {{ product.price.toFixed(2) }} €
+                    {{ product.category }} - {{ product.price.toFixed(2) }} EUR
                   </p>
                 </div>
 
@@ -78,14 +91,20 @@
                 </span>
               </div>
 
-              <button type="button" (click)="toggleFavorite(product.id)">
-                {{ favoriteIds.includes(product.id) ? 'Retirer des favoris' : 'Ajouter aux favoris' }}
+              <button type="button" (click)="service.toggleFavorite(product.id)">
+                {{
+                  service.favoriteIds().includes(product.id)
+                    ? 'Retirer des favoris'
+                    : 'Ajouter aux favoris'
+                }}
               </button>
             </li>
           }
         </ul>
       } @else {
-        <p class="empty-state">Aucun produit a afficher dans cette vue.</p>
+        <p class="empty-state">
+          Aucun produit a afficher dans cette vue.
+        </p>
       }
     </section>
   </div>
