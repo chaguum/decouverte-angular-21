@@ -980,9 +980,21 @@ Puis, le composant devient beaucoup plus simple:
   template: `...`
 })
 export class ProductsPageComponent {
-  readonly store = inject(ProductsStore);
+  private readonly store = inject(ProductsStore);
+  public readonly favoriteCount = this.store.favoriteCount;
 }
 ```
+
+Cas a ne pas reproduire:
+
+```ts
+// public readonly favoriteCount = this.store.favoriteCount();
+```
+
+Pourquoi?
+
+Parce qu ici, on ne garde plus le signal expose par le store.
+On lit sa valeur immediatement, et on ne conserve plus qu un nombre.
 
 Ici, le service existe toujours.
 La difference, c est que le composant n orchestre plus lui-meme le chargement.
