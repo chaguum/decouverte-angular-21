@@ -27,21 +27,25 @@ Si l utilisateur recharge completement l onglet navigateur, le state repart de z
 
 ## Ce qu on faisait souvent avant
 
-Avant, on melangeait facilement tout dans le meme service ou le meme composant:
+Avant, on gardait souvent l etat local dans le composant, avec un appel direct au service:
 
 ```ts
-readonly products = signal<Product[]>([]);
-readonly favoriteIds = signal<number[]>([]);
-readonly loading = signal(false);
-readonly errorMessage = signal<string | null>(null);
+export class ProductsPageComponent {
+  private readonly productsService = inject(Exercise5ProductsService);
 
-async loadProducts(): Promise<void> {
-  this.loading.set(true);
+  readonly products = signal<Product[]>([]);
+  readonly favoriteIds = signal<number[]>([]);
+  readonly loading = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
-  try {
-    this.products.set(await fetchProducts());
-  } finally {
-    this.loading.set(false);
+  async loadProducts(): Promise<void> {
+    this.loading.set(true);
+
+    try {
+      this.products.set(await this.productsService.loadProducts());
+    } finally {
+      this.loading.set(false);
+    }
   }
 }
 ```
@@ -148,41 +152,36 @@ eviter des booleens disperses comme `loading`, `loaded`, `hasError`.
 
 ## L idee la plus importante de l exercice
 
-Le point cle du store final est la garde anti rechargement:
+Le vrai changement a observer est celui-ci:
 
-```ts
-async loadProducts() {
-  if (store.entities().length > 0) {
-    return;
-  }
+- avant, le composant injecte `Exercise5ProductsService` et orchestre lui-meme `loadProducts()`
+- apres, le store injecte ce meme service et porte la logique a la place du composant
 
-  // sinon seulement on charge
-}
-```
+Autrement dit:
 
-Cette petite condition explique tres bien l interet du state partage:
-
-- si les produits sont deja en memoire, on les reutilise
-- si l utilisateur change de page puis revient, on evite un nouvel appel
-- les composants deviennent des consommateurs du store, pas des mini orchestrateurs chacun dans leur coin
+- le service ne disparait pas
+- il reste responsable de l acces aux donnees
+- le store devient responsable du state partage et des derivees
+- le composant, lui, devient beaucoup plus simple a lire
 
 ## Architecture de l exercice
 
-- `Exercise5Sandbox` est encore branche sur un service local
-- `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-sandbox-products.service.ts`
+- `Exercise5Sandbox`
   montre le point de depart
+- `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-sandbox.ts`
+  montre la version ou le composant injecte directement le service et porte tout le state local
 - `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.store.ts`
   est le fichier starter a completer
+- `src/app/exercice/exercise-5/exercise-5-products.service.ts`
+  est le service unique partage entre la sandbox et la correction
 - `Exercise5Result`
   montre la correction finale
 - `src/app/exercice/exercise-5/components/exercise-5-result/store.ts`
   contient la version complete du store
-- `src/app/exercice/exercise-5/exercise-5-products.service.ts`
-  joue ici le role de service de chargement injecte par le store
 
 ## Mission
 
-1. Observer le service de depart dans `components/exercise-5-sandbox/exercise-5-sandbox-products.service.ts`.
+1. Observer le composant de depart dans `components/exercise-5-sandbox/exercise-5-sandbox.ts`.
 2. Ouvrir `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.store.ts`.
 3. Ajouter `withEntities()` pour porter la collection de produits.
 4. Completer les derivees dans `withComputed`.
@@ -192,7 +191,6 @@ Cette petite condition explique tres bien l interet du state partage:
 8. Utiliser `withHooks` pour lancer le chargement initial.
 9. Garder un statut explicite avec `withStatus()`.
 10. Rebrancher ensuite le composant sandbox sur le store au lieu du service.
-11. Verifier qu un deuxieme appel a `loadProducts()` ne relance pas de chargement si les donnees sont deja presentes.
 
 ## Ce que l equipe doit comprendre a la fin
 
@@ -202,14 +200,14 @@ Cette petite condition explique tres bien l interet du state partage:
 - `withMethods()` porte les intentions
 - `withHooks()` gere le cycle de vie
 - `withStatus()` rend visible le cycle de chargement
-- le benefice principal est aussi la reutilisation d un state deja charge a l echelle de l application
+- le composant n a plus a porter toute la logique de chargement
+- un meme service de donnees peut etre appele soit par un composant legacy, soit par un store moderne
 
 ## Criteres de validation
 
 - le store utilise `withEntities`, `withState`, `withComputed`, `withMethods` et `withHooks`
 - un statut explicite `idle / pending / fulfilled / error` est visible
 - le composant consomme le store au lieu de porter toute la logique
-- la navigation dans l application ne force pas un nouveau chargement si les donnees existent deja
 
 ## Ressources officielles
 

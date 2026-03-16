@@ -43,7 +43,6 @@ export const Exercise5ProductsStore = signalStore(
   withMethods((store, productsService = inject(Exercise5ProductsService)) => ({
     // TODO 2: completer loadProducts()
     // Attendu:
-    // - ne rien faire si les produits sont deja presents
     // - passer le status a pending
     // - incrementer requestCount
     // - appeler productsService.loadProducts()

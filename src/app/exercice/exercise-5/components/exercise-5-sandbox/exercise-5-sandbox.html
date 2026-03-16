@@ -1,10 +1,11 @@
 <section class="workbench">
   <header class="workbench-header">
     <p class="eyebrow">Sandbox</p>
-    <h2>Service legacy a migrer vers un store</h2>
+    <h2>Composant legacy branche directement sur le service</h2>
     <p>
-      Cette vue est encore branchee sur un service local au composant. Le but est de
-      migrer cette logique vers un NgRx Signal Store puis de rebrancher le composant.
+      Cette vue porte encore son etat local dans le composant et appelle directement
+      `Exercise5ProductsService`. Le but est de migrer cette logique vers un NgRx Signal
+      Store puis de rebrancher le composant.
     </p>
   </header>
 
@@ -13,37 +14,41 @@
       <h3>Consigne</h3>
       <p>
         Point de depart :
-        <strong>`src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-sandbox-products.service.ts`</strong>.
+        <strong>`src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-sandbox.ts`</strong>.
         Objectif :
         <strong>`src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.store.ts`</strong>.
       </p>
       <ol>
-        <li>Reperez l etat, les derivees et les methodes dans le service.</li>
+        <li>Reperez l etat, les derivees et les methodes dans le composant.</li>
+        <li>Reperez aussi l appel direct a `Exercise5ProductsService`.</li>
         <li>Recreez cette logique dans le starter store avec `withEntities()`.</li>
-        <li>Ajoutez la garde anti rechargement dans `loadProducts()`.</li>
+        <li>Faites porter `loadProducts()` par le store plutot que par le composant.</li>
         <li>Branchez ensuite ce composant sur le store a la place du service.</li>
         <li>Comparez enfin votre resultat avec la correction finale.</li>
       </ol>
     </aside>
 
     <p class="starter-path">
-      Point de depart : `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-sandbox-products.service.ts`
+      Point de depart : `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-sandbox.ts`
     </p>
     <p class="starter-path">
       Fichier a coder : `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.store.ts`
     </p>
+    <p class="starter-path">
+      Service partage : `src/app/exercice/exercise-5/exercise-5-products.service.ts`
+    </p>
 
     <section class="toolbar">
       <div class="toolbar-actions">
-        <button type="button" (click)="service.loadProducts()">Relancer loadProducts()</button>
-        <button type="button" (click)="service.clearStore()">Vider</button>
+        <button type="button" (click)="loadProducts()">Relancer loadProducts()</button>
+        <button type="button" (click)="clearStore()">Vider</button>
       </div>
 
       <div class="filter-group" aria-label="Filtre des produits">
         @for (filterOption of filters; track filterOption.value) {
           <button
             type="button"
-            [class.active]="service.filter() === filterOption.value"
+            [class.active]="filter() === filterOption.value"
             (click)="setFilter(filterOption.value)"
           >
             {{ filterOption.label }}
@@ -53,26 +58,26 @@
     </section>
 
     <section class="summary">
-      <p><strong>Produits en memoire :</strong> {{ service.totalProducts() }}</p>
-      <p><strong>Statut :</strong> {{ service.status() }}</p>
-      <p><strong>Requetes lancees :</strong> {{ service.requestCount() }}</p>
-      <p><strong>Dernier chargement :</strong> {{ service.lastLoadedAt() ?? 'Aucun' }}</p>
-      <p><strong>Favoris :</strong> {{ service.favoriteCount() }}</p>
-      <p><strong>Favoris disponibles :</strong> {{ service.availableFavoritesCount() }}</p>
+      <p><strong>Produits en memoire :</strong> {{ totalProducts() }}</p>
+      <p><strong>Statut :</strong> {{ status() }}</p>
+      <p><strong>Requetes lancees :</strong> {{ requestCount() }}</p>
+      <p><strong>Dernier chargement :</strong> {{ lastLoadedAt() ?? 'Aucun' }}</p>
+      <p><strong>Favoris :</strong> {{ favoriteCount() }}</p>
+      <p><strong>Favoris disponibles :</strong> {{ availableFavoritesCount() }}</p>
     </section>
 
-    @if (service.errorMessage()) {
+    @if (errorMessage()) {
       <p class="status-box status-error" role="alert">
-        {{ service.errorMessage() }}
+        {{ errorMessage() }}
       </p>
     }
 
     <section class="catalog-panel">
-      <h3>Catalogue pilote par le service</h3>
+      <h3>Catalogue pilote par le composant</h3>
 
-      @if (service.visibleProducts().length > 0) {
+      @if (visibleProducts().length > 0) {
         <ul class="product-list">
-          @for (product of service.visibleProducts(); track product.id) {
+          @for (product of visibleProducts(); track product.id) {
             <li class="product-card">
               <div class="product-card-head">
                 <div>
@@ -90,9 +95,9 @@
                 </span>
               </div>
 
-              <button type="button" (click)="service.toggleFavorite(product.id)">
+              <button type="button" (click)="toggleFavorite(product.id)">
                 {{
-                  service.favoriteIds().includes(product.id)
+                  favoriteIds().includes(product.id)
                     ? 'Retirer des favoris'
                     : 'Ajouter aux favoris'
                 }}
