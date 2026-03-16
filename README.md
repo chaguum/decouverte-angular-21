@@ -1,51 +1,100 @@
 # Decouverte Angular 21
 
-Support de presentation V1 pour une demi-journee d atelier destinee a une equipe habituee a Angular 16.
+Support de presentation V2 pour une equipe habituee a Angular 16.
 
-Le but de ce projet n est pas de montrer tout Angular 21.
-Le but est de faire decouvrir, rapidement et concretement, les evolutions qui changent vraiment la facon de coder au quotidien.
+Ce document n est pas pense comme une liste d exercices.
+Il est pense comme un **fil conducteur de presentation**, organise en chapitres, pour expliquer:
 
-## Objectif pedagogique
+- ce qui change
+- pourquoi Angular pousse ces changements
+- quel impact cela a sur notre facon de coder
+- dans quels cas ces nouveautes sont vraiment utiles
 
-A la fin de l atelier, l equipe doit avoir compris:
-
-- pourquoi Angular pousse une ecriture plus locale et plus explicite
-- comment les templates ont evolue
-- comment les Signals changent la gestion du state local
-- comment faire cohabiter RxJS et Signals
-- comment structurer un state partage avec NgRx Signal Store
-- ce que Signal Forms apporte, et pourquoi il faut encore rester prudent
-
-## Programme de l atelier
-
-1. Exercice 1 : Standalone
-2. Exercice 2 : Controle de flux et `@let`
-3. Exercice 3 : Signals
-4. Exercice 3.5 : Signals et `input` / `output`
-5. Exercice 4 : Interop RxJS et Signals
-6. Exercice 5 : NgRx Signal Store
-7. Exercice 6 : Signal Forms
-
-## Philosophie generale
-
-Chaque sujet suit le meme format:
-
-- une sandbox qui montre un point de depart
-- un resultat attendu qui montre la version moderne
-- un README dedie dans `public/themes/exercise-X/`
-
-L idee n est pas de faire des exercices longs.
-L idee est de faire des micro-exercices de 10 a 15 minutes qui isolent une seule notion.
+Les exercices du projet servent ensuite a pratiquer chaque chapitre.
 
 ---
 
-## Exercice 1 : Standalone
+## Plan de presentation
 
-### Pourquoi ce sujet existe
+1. Le fil rouge des evolutions Angular recentes
+2. Chapitre 1 - Simplifier l architecture avec Standalone
+3. Chapitre 2 - Moderniser les templates avec `@if`, `@for`, `@switch` et `@let`
+4. Chapitre 3 - Repenser le state local avec les Signals
+5. Chapitre 4 - Moderniser la communication composant avec `input()` et `output()`
+6. Chapitre 5 - Faire cohabiter RxJS et Signals
+7. Chapitre 6 - Structurer un state partage avec NgRx Signal Store
+8. Chapitre 7 - Ouvrir la discussion sur Signal Forms
+9. Conclusion - Ce qu on adopte vite, ce qu on adopte avec prudence
 
-Quand on vient d Angular 16, on pense souvent encore en `NgModule`.
-Depuis les versions recentes d Angular, l approche recommandee est beaucoup plus locale:
-les composants deviennent autonomes et declarent eux-memes leurs dependances.
+---
+
+## Le fil rouge des evolutions Angular recentes
+
+Quand on regarde Angular 17, 18, 19, 20 puis 21, on voit une direction tres claire.
+
+Angular cherche a rendre le framework:
+
+- plus local
+- plus explicite
+- plus lisible
+- plus reactive
+
+Autrement dit, Angular pousse moins une architecture basee sur:
+
+- des couches implicites
+- des modules de structuration
+- des derivees recalculees a la main
+- des templates un peu verbeux
+
+Et pousse davantage une architecture basee sur:
+
+- des composants autonomes
+- des templates plus declaratifs
+- un state local clair avec Signals
+- une interop officielle avec RxJS
+- des APIs plus coherentes entre elles
+
+Le bon discours pendant la presentation n est pas:
+
+> Avant c etait mauvais, maintenant c est bien.
+
+Le bon discours est:
+
+> Angular rend progressivement le code plus direct a lire et plus simple a raisonner.
+
+---
+
+## Chapitre 1 - Simplifier l architecture avec Standalone
+
+### Ce que ca change
+
+Pendant longtemps, Angular etait structure autour des `NgModule`.
+Aujourd hui, l approche recommandee est de raisonner d abord en composants autonomes.
+
+Un composant standalone:
+
+- declare lui-meme ses dependances
+- peut etre charge directement par le routeur
+- reduit le besoin de modules intermediaires
+
+### Impact concret
+
+Pour lire une feature, on a moins besoin d ouvrir plusieurs fichiers juste pour comprendre:
+
+- ou le composant est declare
+- de quoi il depend
+- comment il est charge
+
+Le code devient plus local et plus explicite.
+
+### Utilite
+
+Standalone est particulierement utile pour:
+
+- les petites features
+- les pages lazy loaded
+- les composants d interface reutilisables
+- les projets ou on veut reduire le boilerplate
 
 ### Avant
 
@@ -68,7 +117,7 @@ export class TeamFeatureModule {}
 export class Exercise1 {}
 ```
 
-Et pour le routing:
+### Et cote routing
 
 ```ts
 {
@@ -77,11 +126,10 @@ Et pour le routing:
 }
 ```
 
-### Ce qu il faut retenir
+### Message cle
 
-- le composant declare directement ce qu il utilise
-- on supprime une couche intermediaire purement structurelle
-- le lazy loading devient plus direct avec `loadComponent`
+Standalone ne sert pas seulement a ecrire moins de code.
+Il sert surtout a rendre les dependances visibles exactement la ou elles sont utilisees.
 
 ### Ressources
 
@@ -89,19 +137,44 @@ Et pour le routing:
 
 ---
 
-## Exercice 2 : Controle de flux et `@let`
+## Chapitre 2 - Moderniser les templates avec `@if`, `@for`, `@switch` et `@let`
 
-### Pourquoi ce sujet existe
+### Ce que ca change
 
-Angular a introduit une nouvelle ecriture de template:
+Angular a introduit une nouvelle syntaxe de controle de flux pour les templates.
+
+On ne passe plus uniquement par:
+
+- `*ngIf`
+- `*ngFor`
+- `*ngSwitch`
+
+On peut maintenant utiliser:
 
 - `@if`
 - `@for`
 - `@switch`
 - `@let`
 
-Le but n est pas de faire "plus moderne".
-Le but est de rendre les templates plus lisibles et plus explicites.
+### Impact concret
+
+Les templates deviennent:
+
+- plus lisibles
+- moins verbeux
+- plus proches d une logique declarative
+
+Et surtout, `@for` met davantage en avant le `track`, qui est souvent crucial pour les perfs et la stabilite du DOM.
+
+### Utilite
+
+Ce nouveau controle de flux est utile des que:
+
+- le template contient plusieurs branches conditionnelles
+- la liste affichee est dynamique
+- on repete plusieurs fois la meme expression
+
+`@let` est tres utile pour nommer une valeur intermediaire dans un template sans la recalculer visuellement partout.
 
 ### Avant
 
@@ -131,11 +204,28 @@ Le but est de rendre les templates plus lisibles et plus explicites.
 }
 ```
 
-### Ce qu il faut retenir
+### Deuxieme exemple utile avec `@let`
 
-- `@for` rend le `track` tres visible
-- `@let` evite les repetitions d expressions
-- le template raconte mieux l intention metier
+Avant:
+
+```html
+<p>{{ filteredProducts.length }} resultat(s)</p>
+<button [disabled]="filteredProducts.length === 0">Exporter</button>
+```
+
+Maintenant:
+
+```html
+@let count = filteredProducts().length;
+
+<p>{{ count }} resultat(s)</p>
+<button [disabled]="count === 0">Exporter</button>
+```
+
+### Message cle
+
+La nouvelle syntaxe ne sert pas a faire "plus moderne".
+Elle sert a raconter plus clairement l intention du template.
 
 ### Ressources
 
@@ -144,20 +234,42 @@ Le but est de rendre les templates plus lisibles et plus explicites.
 
 ---
 
-## Exercice 3 : Signals
+## Chapitre 3 - Repenser le state local avec les Signals
 
-### Pourquoi ce sujet existe
+### Ce que ca change
 
-Les Signals sont probablement le plus gros changement de modele mental pour une equipe Angular 16.
+Les Signals introduisent une facon plus explicite de modeliser le state local.
 
-Le point important a faire comprendre:
-le gain principal n est pas "le template se met a jour", parce que des proprietes classiques mettent deja le template a jour.
+Angular distingue maintenant beaucoup mieux:
+
+- la valeur source avec `signal()`
+- la valeur derivee avec `computed()`
+- l effet de bord avec `effect()`
+
+### Impact concret
+
+Le gros gain n est pas:
+
+> le template se met a jour
+
+Parce qu avec Angular, un template se mettait deja a jour avec des proprietes classiques.
+
 Le vrai gain est plutot:
 
-- un state source explicite
-- des derivees automatiques avec `computed()`
-- moins de recalculs manuels oublies
-- des effets de bord isoles dans `effect()`
+- on voit mieux ce qui est la source de verite
+- on evite les derivees recalculees a la main
+- on reduit les oublis de synchronisation
+- on isole mieux les effets de bord
+
+### Utilite
+
+Les Signals sont tres utiles pour:
+
+- le state local d un composant
+- les filtres
+- les compteurs
+- les derivees d affichage
+- les petits view models locaux
 
 ### Avant
 
@@ -205,11 +317,15 @@ constructor() {
 }
 ```
 
-### Ce qu il faut retenir
+### A marteler a l oral
 
-- `signal()` = source de verite locale
-- `computed()` = derivee pure
+- `signal()` = source
+- `computed()` = derivee
 - `effect()` = effet de bord
+
+Et surtout:
+
+> un `effect()` ne doit pas servir a recalculer un state metier qui pourrait etre un `computed()`
 
 ### Ressources
 
@@ -217,21 +333,36 @@ constructor() {
 
 ---
 
-## Exercice 3.5 : Signals et `input` / `output`
+## Chapitre 4 - Moderniser la communication composant avec `input()` et `output()`
 
-### Pourquoi ce sujet existe
+### Ce que ca change
 
-Une fois le state local modernise avec Signals, il faut aussi moderniser la communication entre composants.
+Pendant longtemps, les composants Angular ont communique avec:
 
-Angular pousse aujourd hui:
+- `@Input()`
+- `@Output()`
+- `EventEmitter`
+
+Angular propose aujourd hui des APIs plus directes:
 
 - `input()`
 - `output()`
 
-plutot que:
+### Impact concret
 
-- `@Input()`
-- `@Output()`
+La declaration devient:
+
+- plus concise
+- plus lisible
+- plus coherente avec les autres primitives modernes du framework
+
+### Utilite
+
+Cette modernisation est utile des qu on veut:
+
+- rafraichir un composant enfant legacy
+- aligner les composants avec les autres APIs modernes Angular
+- reduire un peu le bruit dans la declaration d interface d un composant
 
 ### Avant
 
@@ -249,11 +380,23 @@ readonly pageTitle = input.required<string>();
 readonly availableOnlyChange = output<boolean>();
 ```
 
-### Ce qu il faut retenir
+### Exemple d utilisation cote parent
 
-- le parent reste proprietaire du state
-- l enfant recoit des donnees via `input()`
-- l enfant remonte une intention via `output()`
+```html
+<app-product-summary
+  [resultsCount]="resultsCount()"
+  [pageTitle]="pageTitle()"
+  (availableOnlyChange)="setAvailableOnly($event)"
+/>
+```
+
+### Message cle
+
+Le parent reste proprietaire du state.
+L enfant ne fait que:
+
+- recevoir des donnees
+- emettre une intention
 
 ### Ressources
 
@@ -262,18 +405,34 @@ readonly availableOnlyChange = output<boolean>();
 
 ---
 
-## Exercice 4 : Interop RxJS et Signals
+## Chapitre 5 - Faire cohabiter RxJS et Signals
 
-### Pourquoi ce sujet existe
+### Ce que ca change
 
-Une equipe Angular 16 a deja beaucoup de RxJS dans le codebase.
-La bonne question n est donc pas:
+Une equipe Angular 16 a deja de nombreux flux RxJS.
+Le sujet n est donc pas de tout remplacer.
 
-> Est-ce qu on remplace RxJS par Signals ?
+Le vrai sujet est:
 
-La bonne question est:
+> comment consommer un flux RxJS proprement dans une UI Angular moderne
 
-> Comment faire cohabiter RxJS et Signals proprement ?
+### Impact concret
+
+Angular fournit une interop officielle.
+On peut garder:
+
+- RxJS dans les services
+- Signals dans les composants
+
+Ce qui permet de moderniser la couche UI sans tout rearchitecturer.
+
+### Utilite
+
+Tres utile quand:
+
+- un service expose deja un `Observable`
+- le composant veut juste lire une valeur courante
+- on veut ensuite faire des derivees d affichage simples avec `computed()`
 
 ### Promise, Observable, Signal
 
@@ -291,8 +450,7 @@ async function loadUser(): Promise<User> {
 A retenir:
 
 - une seule resolution
-- tres bien pour un appel ponctuel
-- pas de notion de flux continu
+- utile pour une operation ponctuelle
 
 #### Observable
 
@@ -313,9 +471,8 @@ readonly filteredProducts$ = combineLatest([
 
 A retenir:
 
-- plusieurs emissions possibles
-- tres adapte aux evenements, streams, combinaisons et pipelines
-- excellent pour les services et la logique reactive riche
+- plusieurs emissions
+- utile pour les streams, events et combinaisons complexes
 
 #### Signal
 
@@ -332,8 +489,7 @@ readonly filteredProducts = computed(() =>
 A retenir:
 
 - lecture immediate de la valeur courante
-- excellent pour le state local et les derivees d affichage
-- tres naturel dans un composant Angular
+- tres pratique pour le state local Angular
 
 ### Avant
 
@@ -362,11 +518,10 @@ readonly filteredProducts = computed(() => {
 });
 ```
 
-### Ce qu il faut retenir
+### Message cle
 
-- le service peut rester en RxJS
-- le composant peut consommer une valeur courante via `toSignal()`
-- on simplifie la couche UI sans casser le modele existant
+`toSignal()` ne remplace pas RxJS.
+`toSignal()` permet a un composant Angular de lire plus simplement la valeur courante issue d un flux RxJS.
 
 ### Ressources
 
@@ -375,21 +530,38 @@ readonly filteredProducts = computed(() => {
 
 ---
 
-## Exercice 5 : NgRx Signal Store
+## Chapitre 6 - Structurer un state partage avec NgRx Signal Store
 
-### Pourquoi ce sujet existe
+### Ce que ca change
 
-Quand plusieurs ecrans ont besoin des memes donnees, il faut sortir du simple state local de composant.
+Quand plusieurs parties de l application ont besoin du meme state, le simple state local de composant ne suffit plus.
 
-Le vrai interet du Signal Store dans cet atelier:
+NgRx Signal Store permet de structurer ce state partage en separant clairement:
 
-- partager un state entre plusieurs vues
-- conserver les donnees tant que la SPA tourne
-- eviter de recharger inutilement les memes donnees
-- separer proprement l etat, les derivees, les intentions et le cycle de vie
+- l etat brut
+- les derivees
+- les intentions metier
+- le cycle de vie
+
+### Impact concret
+
+Le gros interet dans cet atelier est le suivant:
+
+- on charge une fois
+- on garde les donnees en memoire tant que la SPA tourne
+- on evite des appels redondants
 
 Important:
-on parle ici de persistence en memoire dans la session SPA, pas de persistence disque.
+cela ne veut pas dire persistance disque.
+Si on recharge completement l onglet navigateur, le state repart de zero.
+
+### Utilite
+
+Tres utile quand:
+
+- plusieurs vues consomment les memes donnees
+- le chargement reseau est mutualise
+- le filtre, les favoris ou le statut doivent etre partages
 
 ### Avant
 
@@ -451,11 +623,20 @@ export const ProductsStore = signalStore(
 - `withHooks()` = cycle de vie
 - `withStatus()` = statut de chargement explicite dans notre atelier
 
-### Ce qu il faut retenir
+### Exemple important a montrer
 
-- le store root garde les donnees en memoire tant que l application tourne
-- on centralise la logique une fois
-- les composants deviennent des consommateurs du store
+```ts
+async loadProducts() {
+  if (store.entities().length > 0) {
+    return;
+  }
+
+  // sinon seulement on charge
+}
+```
+
+Ce petit garde-fou explique tres bien l interet du store partage:
+pas besoin de recharger ce qui est deja en memoire.
 
 ### Ressources
 
@@ -467,20 +648,46 @@ export const ProductsStore = signalStore(
 
 ---
 
-## Exercice 6 : Signal Forms
+## Chapitre 7 - Ouvrir la discussion sur Signal Forms
 
-### Pourquoi ce sujet existe
+### Ce que ca change
 
-Signal Forms est interessant pedagogiquement, car il montre ou Angular veut aller sur les formulaires.
+Signal Forms montre la direction que prend Angular pour les formulaires.
+On ne raisonne plus seulement en:
 
-Point important a dire clairement a l equipe:
-la documentation officielle presente encore cette API comme experimentale.
+- `FormGroup`
+- `FormControl`
 
-Cela veut dire:
+mais davantage en:
 
-- sujet tres interessant a comprendre
-- bonne vision de la direction du framework
-- prudence avant generalisation en production
+- modele de donnees
+- formulaire derive de ce modele
+- champs relies a ce modele
+
+### Impact concret
+
+Le vocabulaire change:
+
+- on part d un modele signal
+- on construit le formulaire avec `form()`
+- les champs sont relies via `[formField]`
+
+### Utilite
+
+Ce sujet est surtout utile aujourd hui pour:
+
+- faire de la veille
+- comprendre la direction du framework
+- comparer avec Reactive Forms
+
+### Point de vigilance
+
+La documentation Angular presente encore Signal Forms comme experimental.
+Il faut donc le presenter comme:
+
+- un sujet tres interessant
+- une piste d avenir
+- pas encore une generalisation immediate en prod sans recul
 
 ### Avant
 
@@ -517,11 +724,13 @@ readonly profileForm = form(this.profileModel, (path) => {
 <input [formField]="profileForm.email" />
 ```
 
-### Ce qu il faut retenir
+### Message cle
 
-- on part d un modele pilote par signals
-- `form()` construit l arborescence de champs
-- les champs et validations deviennent plus explicites
+Signal Forms est a presenter comme un sujet d ouverture:
+
+- tres interessant
+- tres formateur
+- mais encore a manipuler avec prudence
 
 ### Ressources
 
@@ -530,39 +739,29 @@ readonly profileForm = form(this.profileModel, (path) => {
 
 ---
 
-## Messages cle a marteler pendant la presentation
+## Conclusion - Ce qu on adopte vite, ce qu on adopte avec prudence
 
-### 1. Angular ne remplace pas tout d un coup
+### A adopter vite
 
-Le bon discours n est pas:
+- Standalone
+- nouveau controle de flux
+- `@let`
+- Signals pour le state local
+- `input()` et `output()`
+- interop RxJS / Signals
 
-- "tout ce qu on faisait avant est mauvais"
+### A adopter avec un vrai cadrage projet
 
-Le bon discours est:
+- NgRx Signal Store
 
-- "Angular propose maintenant des APIs plus coherentes entre elles"
+Parce que le sujet n est pas seulement syntaxique.
+Il touche a la structure globale de l application.
 
-### 2. Le vrai fil rouge, c est la clarte
+### A presenter avec prudence
 
-On voit une tendance generale:
+- Signal Forms
 
-- standalone pour rendre les dependances visibles localement
-- nouveau control flow pour clarifier les templates
-- signals pour clarifier le state local et les derivees
-- signal store pour clarifier le state partage
-
-### 3. Tous les sujets n ont pas le meme niveau de maturite
-
-Il faut distinguer:
-
-- ce qui est deja tres etabli
-- ce qui est moderne et recommande
-- ce qui est encore experimental
-
-Dans cet atelier:
-
-- Standalone, control flow, signals, input/output modernes et RxJS interop sont des sujets centraux
-- Signal Forms doit etre presente avec plus de prudence
+Parce que l API reste experimentale et doit etre distinguee des sujets deja tres matures.
 
 ---
 
@@ -599,11 +798,11 @@ Chaque sujet possede:
 
 ## Suite possible
 
-Cette V1 du README sert de support de presentation global.
-La suite logique est de le paufiner ensemble en ajoutant:
+Cette version sert de support de presentation global.
+La suite logique est de la paufiner ensemble en ajoutant:
 
-- un timing estime par sujet
-- des slides plus "oral presentation"
+- un timing estime par chapitre
+- des notes d oral
 - des schemas simples
 - des messages d attention "a ne pas surutiliser"
-- des references directes aux fichiers du projet pour chaque demo
+- des references directes aux fichiers du projet pour chaque demonstration
