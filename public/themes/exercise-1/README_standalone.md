@@ -143,6 +143,23 @@ Vous devez observer puis reproduire une logique de ce type:
 3. importer localement les composants utilises
 4. garder le meme comportement fonctionnel
 
+Dans le HTML, les champs a modifier pour passer de la version native a la version PrimeNG sont les suivants:
+
+- champ `Nom` : remplacer l `input` HTML par un `input` avec la directive `pInputText`
+- champ `Email` : remplacer l `input` HTML par un `input` avec la directive `pInputText`
+- champ `Role` : remplacer le `select` HTML par le composant `p-select`
+- champ `Bio` : remplacer le `textarea` HTML par un `textarea` avec la directive `pTextarea`
+- case `Recevoir la newsletter interne` : remplacer l `input type="checkbox"` par `p-checkbox`
+- bouton `Enregistrer` : remplacer le bouton HTML par `p-button`
+
+Autrement dit, dans la correction, les points d accroche PrimeNG visibles dans le template sont:
+
+- `pInputText`
+- `p-select`
+- `pTextarea`
+- `p-checkbox`
+- `p-button`
+
 Le sujet n est pas l UI.
 Le sujet est la localisation explicite des dependances.
 

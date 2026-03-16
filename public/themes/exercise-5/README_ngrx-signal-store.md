@@ -101,7 +101,15 @@ withComputed((store) => ({
 `withMethods()` porte les intentions metier.
 
 ```ts
-withMethods((store) => ({
+withMethods((store, productService = inject(ProductService)) => ({
+  async loadProducts() {
+    if (store.entities().length > 0) {
+      return;
+    }
+
+    const products = await productService.loadProducts();
+    patchState(store, setAllEntities(products));
+  },
   toggleFavorite(productId: number) {
     const isFavorite = store.favoriteIds().includes(productId);
 
