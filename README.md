@@ -20,11 +20,11 @@ Les exercices du projet servent ensuite a pratiquer chaque chapitre.
 2. Chapitre 1 - Simplifier l architecture avec Standalone
 3. Chapitre 2 - Moderniser les templates avec `@if`, `@for`, `@switch` et `@let`
 4. Chapitre 3 - Repenser le state local avec les Signals
-5. Bonus - Comprendre Zoneless Change Detection
-6. Chapitre 4 - Moderniser la communication composant avec `input()` et `output()`
-7. Chapitre 5 - Faire cohabiter RxJS et Signals
-8. Chapitre 6 - Structurer un state partage avec NgRx Signal Store
-9. Chapitre 7 - Ouvrir la discussion sur Signal Forms
+5. Chapitre 4 - Moderniser la communication composant avec `input()` et `output()`
+6. Chapitre 5 - Faire cohabiter RxJS et Signals
+7. Chapitre 6 - Structurer un state partage avec NgRx Signal Store
+8. Chapitre 7 - Ouvrir la discussion sur Signal Forms
+9. Bonus final - Comprendre Zoneless Change Detection
 10. Conclusion - Ce qu on adopte vite, ce qu on adopte avec prudence
 
 ---
@@ -526,253 +526,6 @@ Ici, `total` devrait etre un `computed()`, pas un `signal()` mis a jour par effe
 
 ### Ressources
 
-- Signals: [https://angular.dev/guide/signals](https://angular.dev/guide/signals)
-
----
-
-## Bonus - Comprendre Zoneless Change Detection
-
-### Pourquoi parler de zoneless
-
-Quand une equipe vient d Angular 16, elle a souvent utilise Angular sans vraiment se poser la
-question de **comment** le framework savait qu il fallait rafraichir le template.
-
-Pendant longtemps, la reponse etait:
-
-- Angular s appuie sur `Zone.js`
-- `Zone.js` observe beaucoup d operations asynchrones
-- puis Angular relance la change detection
-
-Avec Angular moderne, et en particulier avec les Signals, le framework pousse un modele plus
-explicite.
-
-Et d apres la documentation officielle Angular v21, **zoneless est le comportement par defaut en
-Angular v21+**.
-
-### Rappel : comment Angular detectait les changements
-
-La change detection, c est le mecanisme qui permet a Angular de verifier:
-
-- si une valeur utilisee dans un template a change
-- et si le DOM doit etre remis a jour
-
-Metaphore simple:
-
-- `Zone.js` = **alarme generale**
-- `Zoneless` = **declencheurs cibles**
-
-Avec l alarme generale, on dit:
-
-> "Quelque chose d asynchrone vient de se produire, verifions l application."
-
-Avec des declencheurs cibles, on dit plutot:
-
-> "Cette valeur reactive a change, cette vue doit etre synchronisee."
-
-### Le role de Zone.js
-
-Historiquement, `Zone.js` patchait plusieurs APIs asynchrones du navigateur:
-
-- les evenements DOM
-- les timers comme `setTimeout`
-- les promesses
-
-L idee etait simple:
-des qu une operation async se termine, Angular est prevenu et peut relancer la change detection.
-
-Exemple mental tres simple:
-
-```ts
-setTimeout(() => {
-  this.count++;
-}, 1000);
-```
-
-Avec Zone.js, Angular pouvait detecter automatiquement qu un timer venait de se terminer, puis
-repasser sur la vue.
-
-Autre exemple:
-
-```ts
-button.addEventListener('click', () => {
-  this.name = 'Ada';
-});
-```
-
-Ou encore:
-
-```ts
-fetchUser().then((user) => {
-  this.user = user;
-});
-```
-
-Dans ce modele, Angular reagissait apres ces signaux asynchrones globaux.
-
-### Les limites du modele base sur Zone.js
-
-Le probleme, c est que `Zone.js` sait qu un evenement async s est produit, mais il ne sait pas
-si l etat utile pour le template a vraiment change.
-
-Cela amene plusieurs limites:
-
-- des synchronisations plus frequentes que necessaire
-- un cout runtime et bundle supplementaire
-- un debuggage parfois moins lisible
-- un modele mental un peu implicite
-
-Autrement dit:
-
-- on sait qu Angular "reagit"
-- mais on sait moins clairement **pourquoi**
-- et moins clairement **quelle donnee** a justifie cette reaction
-
-### Le principe du mode zoneless
-
-En mode zoneless, Angular ne depend plus de `Zone.js` pour deviner quand il faut relancer la
-change detection.
-
-Le framework s appuie a la place sur des **notifications explicites**.
-
-D apres la doc officielle, ces notifications incluent notamment:
-
-- la mise a jour d un signal lu dans un template
-- les callbacks de listeners template ou host
-- `ChangeDetectorRef.markForCheck()`
-- `AsyncPipe`
-
-Exemple simple avec un signal:
-
-```ts
-readonly count = signal(0);
-
-increment(): void {
-  this.count.update((value) => value + 1);
-}
-```
-
-Si `count()` est lu dans le template, Angular sait exactement quelle donnee reactive a change.
-
-On n est plus dans:
-
-> "un timer, une promesse ou un event est passe quelque part"
-
-mais plutot dans:
-
-> "ce signal lu par la vue a change"
-
-### Le lien avec les Signals
-
-Les Signals rendent ce modele beaucoup plus naturel.
-
-Pourquoi?
-
-Parce qu un signal:
-
-- represente une valeur courante reactive
-- est lu explicitement dans le template
-- notifie Angular quand cette valeur change
-
-Exemple:
-
-```ts
-readonly searchTerm = signal('');
-readonly products = signal<Product[]>([]);
-
-readonly filteredProducts = computed(() =>
-  this.products().filter((product) =>
-    product.name.toLowerCase().includes(this.searchTerm().toLowerCase())
-  )
-);
-```
-
-Dans ce cas:
-
-- `searchTerm` et `products` sont les sources
-- `filteredProducts` est une derivee claire
-- Angular suit explicitement ces dependances
-
-Le lien pedagogique important a faire avec le chapitre Signals est donc:
-
-- plus Angular va vers un state explicite
-- moins il a besoin d une alarme generale comme Zone.js
-
-### Avant / apres
-
-Avant, le modele mental pouvait ressembler a ceci:
-
-```ts
-loadUser(): void {
-  this.userService.getUser().subscribe((user) => {
-    this.user = user;
-  });
-}
-```
-
-La question implicite etait:
-
-> "Angular va bien remarquer que quelque chose a change, n est-ce pas ?"
-
-Dans un modele moderne, on cherche plutot a ecrire:
-
-```ts
-readonly user = signal<User | null>(null);
-
-loadUser(): void {
-  this.userService.getUser().subscribe((user) => {
-    this.user.set(user);
-  });
-}
-```
-
-Ici, la mise a jour devient explicite:
-
-- la source reactive est visible
-- Angular est notifie parce qu un signal lu par la vue a change
-
-### Ce que cela change pour les developpeurs Angular
-
-Le changement n est pas:
-
-> "maintenant Angular ne fait plus de change detection"
-
-Le changement est plutot:
-
-- la detection devient plus explicite
-- le framework depend moins d un mecanisme global implicite
-- on raisonne davantage en notifications precises
-- les Signals deviennent une brique tres naturelle du modele Angular moderne
-
-Pour une equipe Angular 16, le bon message est donc:
-
-- auparavant, Angular vous aidait beaucoup via Zone.js
-- maintenant, Angular pousse un modele plus previsible
-- et ce modele est beaucoup plus coherent avec `signal()`, `computed()` et `effect()`
-
-### Message cle a retenir
-
-`Zone.js` disait en substance:
-
-> "quelque chose d asynchrone s est passe, verifions large"
-
-Le mode zoneless dit plutot:
-
-> "une donnee reactive a emis un vrai signal de changement, mettons a jour ce qui en depend"
-
-Ce chapitre bonus ne sert pas a faire de vous des experts de Zone.js.
-Il sert a comprendre **pourquoi** Angular moderne pousse autant les Signals et les APIs plus
-explicites.
-
-### A marteler a l oral
-
-- `Zone.js` patchait les APIs async pour declencher Angular automatiquement
-- ce modele etait pratique, mais assez global et implicite
-- zoneless rend le declenchement plus explicite
-- les Signals s inscrivent parfaitement dans cette evolution
-
-### Ressources
-
-- Zoneless: [https://angular.dev/guide/zoneless](https://angular.dev/guide/zoneless)
 - Signals: [https://angular.dev/guide/signals](https://angular.dev/guide/signals)
 
 ---
@@ -1375,6 +1128,253 @@ Signal Forms est a presenter comme un sujet d ouverture:
 
 - Signal Forms: [https://angular.dev/essentials/signal-forms](https://angular.dev/essentials/signal-forms)
 - Tutorial: [https://angular.dev/tutorials/signal-forms](https://angular.dev/tutorials/signal-forms)
+
+---
+
+## Bonus final - Comprendre Zoneless Change Detection
+
+### Pourquoi parler de zoneless
+
+Quand une equipe vient d Angular 16, elle a souvent utilise Angular sans vraiment se poser la
+question de **comment** le framework savait qu il fallait rafraichir le template.
+
+Pendant longtemps, la reponse etait:
+
+- Angular s appuie sur `Zone.js`
+- `Zone.js` observe beaucoup d operations asynchrones
+- puis Angular relance la change detection
+
+Avec Angular moderne, et en particulier avec les Signals, le framework pousse un modele plus
+explicite.
+
+Et d apres la documentation officielle Angular v21, **zoneless est le comportement par defaut en
+Angular v21+**.
+
+### Rappel : comment Angular detectait les changements
+
+La change detection, c est le mecanisme qui permet a Angular de verifier:
+
+- si une valeur utilisee dans un template a change
+- et si le DOM doit etre remis a jour
+
+Metaphore simple:
+
+- `Zone.js` = **alarme generale**
+- `Zoneless` = **declencheurs cibles**
+
+Avec l alarme generale, on dit:
+
+> "Quelque chose d asynchrone vient de se produire, verifions l application."
+
+Avec des declencheurs cibles, on dit plutot:
+
+> "Cette valeur reactive a change, cette vue doit etre synchronisee."
+
+### Le role de Zone.js
+
+Historiquement, `Zone.js` patchait plusieurs APIs asynchrones du navigateur:
+
+- les evenements DOM
+- les timers comme `setTimeout`
+- les promesses
+
+L idee etait simple:
+des qu une operation async se termine, Angular est prevenu et peut relancer la change detection.
+
+Exemple mental tres simple:
+
+```ts
+setTimeout(() => {
+  this.count++;
+}, 1000);
+```
+
+Avec Zone.js, Angular pouvait detecter automatiquement qu un timer venait de se terminer, puis
+repasser sur la vue.
+
+Autre exemple:
+
+```ts
+button.addEventListener('click', () => {
+  this.name = 'Ada';
+});
+```
+
+Ou encore:
+
+```ts
+fetchUser().then((user) => {
+  this.user = user;
+});
+```
+
+Dans ce modele, Angular reagissait apres ces signaux asynchrones globaux.
+
+### Les limites du modele base sur Zone.js
+
+Le probleme, c est que `Zone.js` sait qu un evenement async s est produit, mais il ne sait pas
+si l etat utile pour le template a vraiment change.
+
+Cela amene plusieurs limites:
+
+- des synchronisations plus frequentes que necessaire
+- un cout runtime et bundle supplementaire
+- un debuggage parfois moins lisible
+- un modele mental un peu implicite
+
+Autrement dit:
+
+- on sait qu Angular "reagit"
+- mais on sait moins clairement **pourquoi**
+- et moins clairement **quelle donnee** a justifie cette reaction
+
+### Le principe du mode zoneless
+
+En mode zoneless, Angular ne depend plus de `Zone.js` pour deviner quand il faut relancer la
+change detection.
+
+Le framework s appuie a la place sur des **notifications explicites**.
+
+D apres la doc officielle, ces notifications incluent notamment:
+
+- la mise a jour d un signal lu dans un template
+- les callbacks de listeners template ou host
+- `ChangeDetectorRef.markForCheck()`
+- `AsyncPipe`
+
+Exemple simple avec un signal:
+
+```ts
+readonly count = signal(0);
+
+increment(): void {
+  this.count.update((value) => value + 1);
+}
+```
+
+Si `count()` est lu dans le template, Angular sait exactement quelle donnee reactive a change.
+
+On n est plus dans:
+
+> "un timer, une promesse ou un event est passe quelque part"
+
+mais plutot dans:
+
+> "ce signal lu par la vue a change"
+
+### Le lien avec les Signals
+
+Les Signals rendent ce modele beaucoup plus naturel.
+
+Pourquoi?
+
+Parce qu un signal:
+
+- represente une valeur courante reactive
+- est lu explicitement dans le template
+- notifie Angular quand cette valeur change
+
+Exemple:
+
+```ts
+readonly searchTerm = signal('');
+readonly products = signal<Product[]>([]);
+
+readonly filteredProducts = computed(() =>
+  this.products().filter((product) =>
+    product.name.toLowerCase().includes(this.searchTerm().toLowerCase())
+  )
+);
+```
+
+Dans ce cas:
+
+- `searchTerm` et `products` sont les sources
+- `filteredProducts` est une derivee claire
+- Angular suit explicitement ces dependances
+
+Le lien pedagogique important a faire avec le chapitre Signals est donc:
+
+- plus Angular va vers un state explicite
+- moins il a besoin d une alarme generale comme Zone.js
+
+### Avant / apres
+
+Avant, le modele mental pouvait ressembler a ceci:
+
+```ts
+loadUser(): void {
+  this.userService.getUser().subscribe((user) => {
+    this.user = user;
+  });
+}
+```
+
+La question implicite etait:
+
+> "Angular va bien remarquer que quelque chose a change, n est-ce pas ?"
+
+Dans un modele moderne, on cherche plutot a ecrire:
+
+```ts
+readonly user = signal<User | null>(null);
+
+loadUser(): void {
+  this.userService.getUser().subscribe((user) => {
+    this.user.set(user);
+  });
+}
+```
+
+Ici, la mise a jour devient explicite:
+
+- la source reactive est visible
+- Angular est notifie parce qu un signal lu par la vue a change
+
+### Ce que cela change pour les developpeurs Angular
+
+Le changement n est pas:
+
+> "maintenant Angular ne fait plus de change detection"
+
+Le changement est plutot:
+
+- la detection devient plus explicite
+- le framework depend moins d un mecanisme global implicite
+- on raisonne davantage en notifications precises
+- les Signals deviennent une brique tres naturelle du modele Angular moderne
+
+Pour une equipe Angular 16, le bon message est donc:
+
+- auparavant, Angular vous aidait beaucoup via Zone.js
+- maintenant, Angular pousse un modele plus previsible
+- et ce modele est beaucoup plus coherent avec `signal()`, `computed()` et `effect()`
+
+### Message cle a retenir
+
+`Zone.js` disait en substance:
+
+> "quelque chose d asynchrone s est passe, verifions large"
+
+Le mode zoneless dit plutot:
+
+> "une donnee reactive a emis un vrai signal de changement, mettons a jour ce qui en depend"
+
+Ce chapitre bonus ne sert pas a faire de vous des experts de Zone.js.
+Il sert a comprendre **pourquoi** Angular moderne pousse autant les Signals et les APIs plus
+explicites.
+
+### A marteler a l oral
+
+- `Zone.js` patchait les APIs async pour declencher Angular automatiquement
+- ce modele etait pratique, mais assez global et implicite
+- zoneless rend le declenchement plus explicite
+- les Signals s inscrivent parfaitement dans cette evolution
+
+### Ressources
+
+- Zoneless: [https://angular.dev/guide/zoneless](https://angular.dev/guide/zoneless)
+- Signals: [https://angular.dev/guide/signals](https://angular.dev/guide/signals)
 
 ---
 
