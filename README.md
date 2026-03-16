@@ -54,14 +54,6 @@ Et pousse davantage une architecture basee sur:
 - une interop officielle avec RxJS
 - des APIs plus coherentes entre elles
 
-Le bon discours pendant la presentation n est pas:
-
-> Avant c etait mauvais, maintenant c est bien.
-
-Le bon discours est:
-
-> Angular rend progressivement le code plus direct a lire et plus simple a raisonner.
-
 ---
 
 ## Chapitre 1 - Simplifier l architecture avec Standalone
@@ -584,6 +576,28 @@ readonly pageTitle = input.required<string>();
 readonly availableOnlyChange = output<boolean>();
 ```
 
+### Exemple utile avec `input` transform
+
+```ts
+@Component({
+  selector: 'app-user-details',
+  template: `<p>Nom affiche: {{ name() }}</p>`
+})
+export class UserDetailsComponent {
+  readonly name = input('', {
+    transform: (value: string) => value.trim().toUpperCase()
+  });
+}
+```
+
+Ici, Angular transforme la valeur recue avant qu elle soit utilisee dans le composant.
+
+Cet exemple est utile pour montrer qu un `input()` moderne ne sert pas seulement a declarer une entree:
+
+- il peut aussi normaliser une valeur
+- il garde une API locale et explicite
+- il s integre naturellement avec le reste du modele Signals
+
 ### Exemple d utilisation cote enfant avec derivees
 
 ```ts
@@ -774,6 +788,70 @@ readonly filteredProducts = computed(() => {
   );
 });
 ```
+
+### Exemple complementaire avec `outputToObservable`
+
+On peut aussi faire le chemin inverse cote composant parent:
+consommer un `output()` comme un flux RxJS quand on veut lui appliquer des operateurs.
+
+Imports utiles pour cet exemple:
+
+```ts
+import { AfterViewInit, Component, viewChild } from '@angular/core';
+import { outputToObservable } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
+```
+
+```ts
+@Component({
+  selector: 'app-parent',
+  standalone: true,
+  imports: [ChildEditorComponent],
+  template: `
+    <app-child-editor #editor />
+    <p>Derniere valeur recue: {{ lastValidName }}</p>
+  `
+})
+export class ParentComponent implements AfterViewInit {
+  readonly editor = viewChild.required(ChildEditorComponent);
+  lastValidName = '';
+
+  ngAfterViewInit(): void {
+    outputToObservable(this.editor().nameChange)
+      .pipe(filter((name) => name.length >= 3))
+      .subscribe((name) => {
+        this.lastValidName = name;
+      });
+  }
+}
+```
+
+```ts
+@Component({
+  selector: 'app-child-editor',
+  standalone: true,
+  template: `
+    <button type="button" (click)="rename('Ada')">Envoyer Ada</button>
+    <button type="button" (click)="rename('Al')">Envoyer Al</button>
+  `
+})
+export class ChildEditorComponent {
+  readonly nameChange = output<string>();
+
+  rename(name: string): void {
+    this.nameChange.emit(name);
+  }
+}
+```
+
+Dans cet exemple:
+
+- l enfant emet toujours avec `output()`
+- le parent convertit cet output en `Observable`
+- RxJS filtre ensuite les valeurs trop courtes
+
+Cela montre bien que Signals et RxJS ne s opposent pas:
+Angular fournit des points de passage officiels entre les deux modeles.
 
 ### Message cle
 
