@@ -256,19 +256,19 @@ Dans le resultat attendu, le store vit au niveau applicatif.
 
 - `Exercise5Sandbox`
   est encore branche sur un service local
-- `src/app/pages/exercise-5/components/exercise-5-sandbox/exercise-5-products.service.ts`
+- `src/app/exercice/exercise-5/components/exercise-5-sandbox/exercise-5-products.service.ts`
   montre le point de depart a migrer
-- `src/app/pages/exercise-5/exercise-5-products.store.ts`
+- `src/app/exercice/exercise-5/exercise-5-products.store.ts`
   est le fichier store que les developpeurs doivent completer
 - `Exercise5Result`
   montre la correction finale
-- `src/app/pages/exercise-5/components/exercise-5-result/store.ts`
+- `src/app/exercice/exercise-5/components/exercise-5-result/store.ts`
   contient la version complete du store
 
 ## Mission
 
 1. Observer le service de depart dans `components/exercise-5-sandbox/exercise-5-products.service.ts`.
-2. Ouvrir `src/app/pages/exercise-5/exercise-5-products.store.ts`.
+2. Ouvrir `src/app/exercice/exercise-5/exercise-5-products.store.ts`.
 3. Ajouter `withEntities()` pour porter la collection de produits.
 4. Completer les derivees dans `withComputed`.
 5. Completer `loadProducts()`, `reloadProducts()` et `simulateErrorReload()`.
