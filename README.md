@@ -100,8 +100,14 @@ Standalone est particulierement utile pour:
 
 ```ts
 @NgModule({
-  declarations: [Exercise1Component, MemberProfileCard, MemberSkillList],
-  imports: [CommonModule, FormsModule, RouterModule.forChild(routes)]
+  declarations: [ProfileFormComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    RouterModule.forChild(routes)
+  ]
 })
 export class TeamFeatureModule {}
 ```
@@ -111,18 +117,51 @@ export class TeamFeatureModule {}
 ```ts
 @Component({
   standalone: true,
-  imports: [FormsModule, MemberProfileCard, MemberSkillList],
-  templateUrl: './exercise-1.html'
+  imports: [FormsModule, Button, InputText],
+  template: `
+    <input pInputText [(ngModel)]="fullName" />
+    <button pButton type="button" label="Enregistrer"></button>
+  `
 })
-export class Exercise1 {}
+export class ProfileFormComponent {
+  fullName = '';
+}
 ```
 
-### Et cote routing
+### Et cote routing avec `loadComponent`
 
 ```ts
 {
   path: 'exercise-1',
-  loadComponent: () => import('./exercise-1').then((m) => m.Exercise1)
+  loadComponent: () =>
+    import('./pages/profile-form/profile-form.component').then((m) => m.ProfileFormComponent)
+}
+```
+
+### Et si on veut garder une route parente avec des enfants
+
+```ts
+export const adminRoutes: Routes = [
+  {
+    path: '',
+    children: [
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./users-page/users-page.component').then((m) => m.UsersPageComponent)
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./settings-page/settings-page.component').then((m) => m.SettingsPageComponent)
+      }
+    ]
+  }
+];
+
+{
+  path: 'admin',
+  loadChildren: () => import('./admin/admin.routes').then((m) => m.adminRoutes)
 }
 ```
 
@@ -130,6 +169,12 @@ export class Exercise1 {}
 
 Standalone ne sert pas seulement a ecrire moins de code.
 Il sert surtout a rendre les dependances visibles exactement la ou elles sont utilisees.
+
+Dans un projet moderne, cela se voit tres bien avec des bibliotheques UI comme PrimeNG:
+
+- le composant importe lui-meme `Button`, `InputText`, `Select`, etc.
+- on voit immediatement de quoi l ecran depend
+- il n y a plus de gros module UI "fourre-tout" uniquement la pour declarer des imports
 
 ### Ressources
 
@@ -246,6 +291,131 @@ Angular distingue maintenant beaucoup mieux:
 - la valeur derivee avec `computed()`
 - l effet de bord avec `effect()`
 
+### Qu est-ce qu un signal ?
+
+Un signal est une **valeur reactive courante**.
+
+Concretement:
+
+- on peut la lire immediatement
+- on peut la mettre a jour
+- Angular sait qui depend de cette valeur
+- quand elle change, les derivees et le template se remettent a jour automatiquement
+
+Exemple tres simple:
+
+```ts
+readonly count = signal(0);
+```
+
+Lire la valeur:
+
+```ts
+console.log(this.count());
+```
+
+Modifier la valeur:
+
+```ts
+this.count.set(1);
+this.count.update((value) => value + 1);
+```
+
+Autres declarations simples:
+
+```ts
+readonly searchTerm = signal('');
+readonly isLoading = signal(false);
+readonly selectedCategory = signal<'all' | 'hardware' | 'software'>('all');
+```
+
+Le point important:
+un signal est la bonne primitive pour une **source de verite locale** dans un composant.
+
+### Qu est-ce qu un `computed()` ?
+
+Un `computed()` sert a declarer une **valeur derivee**.
+
+Il ne stocke pas une nouvelle source de verite.
+Il calcule une valeur a partir d autres signals.
+
+Exemple simple:
+
+```ts
+readonly count = signal(2);
+readonly doubled = computed(() => this.count() * 2);
+```
+
+Ici:
+
+- `count` est la source
+- `doubled` est la derivee
+
+Si `count` passe a `3`, alors `doubled()` vaudra automatiquement `6`.
+
+Autre exemple simple et parlant:
+
+```ts
+readonly firstName = signal('Ada');
+readonly lastName = signal('Lovelace');
+
+readonly fullName = computed(() => `${this.firstName()} ${this.lastName()}`);
+```
+
+Autre exemple de derivee booleenne:
+
+```ts
+readonly items = signal<string[]>([]);
+readonly hasItems = computed(() => this.items().length > 0);
+```
+
+Le bon reflexe:
+si une valeur peut etre calculee proprement a partir d autres signals, elle doit souvent etre un `computed()`.
+
+### Qu est-ce qu un `effect()` ?
+
+Un `effect()` sert a declarer un **effet de bord**.
+
+Un effet de bord, c est une action qui ne sert pas a produire une nouvelle valeur metier, mais a synchroniser quelque chose a l exterieur:
+
+- le titre de la page
+- un log
+- du stockage local
+- un appel vers une API imperative
+
+Exemple simple:
+
+```ts
+readonly count = signal(0);
+
+constructor() {
+  effect(() => {
+    console.log(`Compteur courant: ${this.count()}`);
+  });
+}
+```
+
+Autre exemple utile:
+
+```ts
+readonly pageTitle = computed(() => `Panier (${this.items().length})`);
+
+constructor() {
+  effect(() => {
+    document.title = this.pageTitle();
+  });
+}
+```
+
+Ici, `pageTitle` est une derivee.
+L `effect()` ne fait que la refleter dans le navigateur.
+
+### La regle simple a retenir
+
+- `signal()` = je stocke une source de verite
+- `computed()` = je derive une nouvelle valeur
+- `effect()` = je synchronise un effet externe
+
 ### Impact concret
 
 Le gros gain n est pas:
@@ -260,6 +430,12 @@ Le vrai gain est plutot:
 - on evite les derivees recalculees a la main
 - on reduit les oublis de synchronisation
 - on isole mieux les effets de bord
+
+En pratique, cela reduit beaucoup les patterns du type:
+
+- "j ai oublie de recalculer le compteur"
+- "j ai oublie de remettre a jour le titre"
+- "j ai deux proprietes qui devraient toujours rester synchronisees"
 
 ### Utilite
 
@@ -317,6 +493,24 @@ constructor() {
 }
 ```
 
+### Exemple tres simple a montrer a l oral
+
+```ts
+readonly price = signal(100);
+readonly quantity = signal(2);
+readonly total = computed(() => this.price() * this.quantity());
+```
+
+Puis:
+
+```ts
+this.quantity.set(3);
+console.log(this.total()); // 300
+```
+
+Le message est simple:
+on n a pas besoin de recalculer `total` a la main.
+
 ### A marteler a l oral
 
 - `signal()` = source
@@ -326,6 +520,16 @@ constructor() {
 Et surtout:
 
 > un `effect()` ne doit pas servir a recalculer un state metier qui pourrait etre un `computed()`
+
+Exemple a eviter:
+
+```ts
+effect(() => {
+  this.total.set(this.price() * this.quantity());
+});
+```
+
+Ici, `total` devrait etre un `computed()`, pas un `signal()` mis a jour par effet.
 
 ### Ressources
 
@@ -380,12 +584,60 @@ readonly pageTitle = input.required<string>();
 readonly availableOnlyChange = output<boolean>();
 ```
 
+### Exemple d utilisation cote enfant avec derivees
+
+```ts
+@Component({
+  selector: 'app-product-summary',
+  template: `
+    <p>{{ summaryLabel() }}</p>
+    <button type="button" (click)="toggleAvailableOnly()">
+      {{ buttonLabel() }}
+    </button>
+  `
+})
+export class ProductSummaryComponent {
+  readonly resultsCount = input.required<number>();
+  readonly pageTitle = input.required<string>();
+  readonly availableOnly = input(false);
+  readonly availableOnlyChange = output<boolean>();
+
+  readonly summaryLabel = computed(() =>
+    `${this.pageTitle()} - ${this.resultsCount()} resultat(s)`
+  );
+
+  readonly buttonLabel = computed(() =>
+    this.availableOnly() ? 'Afficher tout' : 'Afficher seulement les disponibles'
+  );
+
+  constructor() {
+    effect(() => {
+      console.log(`Le parent a envoye ${this.resultsCount()} resultat(s)`);
+    });
+  }
+
+  toggleAvailableOnly(): void {
+    this.availableOnlyChange.emit(!this.availableOnly());
+  }
+}
+```
+
+### Ce que montre cet exemple
+
+- l `input()` est lui aussi lu comme un signal
+- on peut donc construire un `computed()` directement dessus
+- on peut aussi observer une evolution via `effect()`
+
+Autrement dit:
+les entrees d un composant moderne Angular s integrent naturellement au modele Signals.
+
 ### Exemple d utilisation cote parent
 
 ```html
 <app-product-summary
   [resultsCount]="resultsCount()"
   [pageTitle]="pageTitle()"
+  [availableOnly]="availableOnly()"
   (availableOnlyChange)="setAvailableOnly($event)"
 />
 ```
@@ -397,6 +649,11 @@ L enfant ne fait que:
 
 - recevoir des donnees
 - emettre une intention
+
+Mais comme les `input()` sont des signals, l enfant peut aussi:
+
+- calculer une vue derivee avec `computed()`
+- reagir a une evolution avec `effect()`
 
 ### Ressources
 
