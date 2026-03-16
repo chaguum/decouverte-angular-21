@@ -1,0 +1,20 @@
+<section class="stats-panel" aria-live="polite" aria-atomic="true">
+  <header class="stats-header">
+    <p class="eyebrow">Bloc secondaire</p>
+    <h3>Statistiques detaillees du produit</h3>
+    <p>
+      Ce composant represente la zone que l on peut charger plus tard, car elle n est pas
+      critique pour l affichage initial.
+    </p>
+  </header>
+
+  <div class="stats-grid">
+    @for (stat of stats; track stat.label) {
+      <article class="stat-card">
+        <p class="stat-label">{{ stat.label }}</p>
+        <p class="stat-value">{{ stat.value }}</p>
+        <p class="stat-detail">{{ stat.detail }}</p>
+      </article>
+    }
+  </div>
+</section>

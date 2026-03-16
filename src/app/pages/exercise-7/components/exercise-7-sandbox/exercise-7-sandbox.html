@@ -1,0 +1,59 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Sandbox</p>
+    <h2>Le panneau detaille est simplement masque, pas differe</h2>
+    <p>
+      Ici, le composant de statistiques est deja charge dans le bundle initial. Le bouton
+      ne fait qu afficher ou masquer un bloc deja present.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <aside class="workbench-brief">
+      <h3>Consigne</h3>
+      <p>
+        Cette version illustre un reflexe frequent: utiliser un bouton et un `&#64;if` pour
+        masquer un panneau secondaire. Cela change l affichage, mais pas le chargement du
+        code.
+      </p>
+      <ol>
+        <li>Ouvrez les statistiques detaillees avec le bouton.</li>
+        <li>Reperez que le composant enfant est importe directement dans la page.</li>
+        <li>Passez ensuite sur le resultat attendu pour voir la version `&#64;defer`.</li>
+      </ol>
+    </aside>
+
+    <section class="product-shell">
+      <article class="product-card">
+        <p class="product-tag">Produit principal</p>
+        <h3>Smart Recipe Box</h3>
+        <p>
+          L ecran principal doit rester tres rapide a afficher. Les statistiques
+          detaillees sont utiles, mais secondaires.
+        </p>
+        <dl class="product-meta">
+          <div>
+            <dt>Prix</dt>
+            <dd>49 EUR</dd>
+          </div>
+          <div>
+            <dt>Licence</dt>
+            <dd>Equipe interne</dd>
+          </div>
+          <div>
+            <dt>Etat</dt>
+            <dd>Disponible</dd>
+          </div>
+        </dl>
+
+        <button type="button" class="cta-button" (click)="toggleDetails()">
+          {{ showDetails() ? 'Masquer les statistiques' : 'Afficher les statistiques detaillees' }}
+        </button>
+      </article>
+
+      @if (showDetails()) {
+        <app-exercise-7-heavy-stats />
+      }
+    </section>
+  </div>
+</section>

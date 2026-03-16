@@ -1,0 +1,64 @@
+<section class="workbench">
+  <header class="workbench-header">
+    <p class="eyebrow">Resultat attendu</p>
+    <h2>Le panneau detaille est charge a la demande avec `&#64;defer`</h2>
+    <p>
+      Le contenu principal reste immediat. Le bloc de statistiques est charge seulement
+      quand l utilisateur interagit avec le placeholder.
+    </p>
+  </header>
+
+  <div class="workbench-panel">
+    <aside class="workbench-brief">
+      <h3>Ce que montre la correction</h3>
+      <p>
+        Ici, le bouton du placeholder ne revele pas simplement un bloc deja charge. Il
+        declenche le chargement du composant secondaire au bon moment.
+      </p>
+      <ol>
+        <li>Le contenu principal s affiche immediatement.</li>
+        <li>Le bouton du placeholder sert de trigger `on interaction`.</li>
+        <li>Le composant detaille n est utilise que dans le bloc `&#64;defer`.</li>
+      </ol>
+    </aside>
+
+    <section class="product-shell">
+      <article class="product-card">
+        <p class="product-tag">Produit principal</p>
+        <h3>Smart Recipe Box</h3>
+        <p>
+          L ecran principal reste leger. Les statistiques detaillees sont interessantes,
+          mais peuvent attendre une interaction explicite de l utilisateur.
+        </p>
+        <dl class="product-meta">
+          <div>
+            <dt>Prix</dt>
+            <dd>49 EUR</dd>
+          </div>
+          <div>
+            <dt>Licence</dt>
+            <dd>Equipe interne</dd>
+          </div>
+          <div>
+            <dt>Etat</dt>
+            <dd>Disponible</dd>
+          </div>
+        </dl>
+      </article>
+
+      <div aria-live="polite" aria-atomic="true">
+        @defer (on interaction) {
+          <app-exercise-7-heavy-stats />
+        } @placeholder {
+          <button type="button" class="cta-button">
+            Afficher les statistiques detaillees
+          </button>
+        } @loading (after 100ms; minimum 700ms) {
+          <p class="loading-box">Chargement du panneau detaille...</p>
+        } @error {
+          <p class="error-box">Le bloc detaille n a pas pu etre charge.</p>
+        }
+      </div>
+    </section>
+  </div>
+</section>
