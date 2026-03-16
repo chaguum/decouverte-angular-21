@@ -2,34 +2,13 @@
   <header class="exercise-header">
     <p>Exercice 1 : {{ topic.label }}</p>
     <h1>Formulaire standalone</h1>
-    <p>
-      L exercice est volontairement centre sur une seule idee: comprendre comment importer des
-      composants standalone dans une page Angular, puis comparer votre travail avec une correction
-      basee sur PrimeNG standalone.
-    </p>
   </header>
 
-  <div class="exercise-shell">
-    <fieldset class="exercise-switch">
-      <legend>Mode</legend>
-
-      <label>
-        <input type="radio" name="view-mode" value="sandbox" [(ngModel)]="viewMode" />
-        Sandbox de l exercice
-      </label>
-
-      <label>
-        <input type="radio" name="view-mode" value="result" [(ngModel)]="viewMode" />
-        Resultat attendu
-      </label>
-    </fieldset>
-
-    <div class="exercise-stage">
-      @if (viewMode === 'sandbox') {
-        <app-exercise-1-sandbox />
-      } @else {
-        <app-exercise-1-result />
-      }
-    </div>
+  <div class="exercise-stage">
+    @if (viewMode() === 'sandbox') {
+      <app-exercise-1-sandbox />
+    } @else {
+      <app-exercise-1-result />
+    }
   </div>
 </section>

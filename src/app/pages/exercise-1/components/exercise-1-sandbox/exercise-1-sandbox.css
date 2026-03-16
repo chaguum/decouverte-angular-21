@@ -31,10 +31,37 @@
 
 .workbench-brief {
   margin-bottom: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid #f59e0b;
+  border-left-width: 6px;
+  background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 100%);
+  border-radius: 0.75rem;
 }
 
 .workbench-brief h3 {
-  margin-top: 0;
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #9a3412;
+}
+
+.workbench-brief p {
+  margin: 0 0 0.75rem;
+  line-height: 1.55;
+  color: #7c2d12;
+}
+
+.workbench-brief ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.workbench-brief li {
+  line-height: 1.5;
 }
 
 .workbench-content {
